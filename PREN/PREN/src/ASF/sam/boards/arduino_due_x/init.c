@@ -52,10 +52,6 @@
 
 void board_init(void)
 {
-
-
-
-	
 	/*Pin Deffinieren für Stepper1 Z-Achse
 	- PIO_PD0 = PIN25		PIO_PC4  = PIN36
 	- PIO_PC1 = PIN33		PIO_PC5  = PIN37
@@ -158,6 +154,17 @@ void board_init(void)
 	pio_enable_interrupt(PIOD, PIO_PD2);
 	NVIC_EnableIRQ(PIOD_IRQn);
 	
+	//TC1 mit 0.01s Interrupt
+	sysclk_enable_peripheral_clock(ID_TC1);
+	tc_init(TC0, 1,TC_CMR_TCCLKS_TIMER_CLOCK3
+	| TC_CMR_WAVE /* Waveform mode */
+	| TC_CMR_WAVSEL_UP_RC
+	);
+	tc_write_rc(TC0, 1, 26250);
+	/*Interrupt enable*/
+	TC0->TC_CHANNEL[1].TC_IER = TC_IER_CPCS;
+	TC0->TC_CHANNEL[1].TC_IER =~ TC_IDR_CPCS;
+	NVIC_EnableIRQ(TC1_IRQn);
 	
 #ifndef CONF_BOARD_KEEP_WATCHDOG_AT_INIT
 	/* Disable the watchdog */

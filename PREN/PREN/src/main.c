@@ -116,27 +116,9 @@ int main (void)
 //
 */
 
-//
-sysclk_enable_peripheral_clock(ID_TC1);
-tc_init(TC0, 1,TC_CMR_TCCLKS_TIMER_CLOCK4
-| TC_CMR_WAVE /* Waveform mode */
-| TC_CMR_ACPA_SET /*Set bei RA */
-| TC_CMR_ACPC_CLEAR /* Clear bei RC */
-);
-tc_write_rc(TC0, 1, 328125);
-/*Interrupt enable*/
-TC0->TC_CHANNEL[1].TC_IER = TC_IER_CPCS;
-TC0->TC_CHANNEL[1].TC_IER =~ TC_IDR_CPCS;
-NVIC_EnableIRQ(TC1_IRQn);
-tc_start(TC0, 1);
-//
-//
-//
-	timer_init((zAchse.pwm),0, 50);
-//	tc_start(zAchse.pwm.Timercounter, zAchse.pwm.channel);
-//	delay_s(2);
-//	printf("reached");
-	ramp_up(zAchse.pwm, 40000);
+
+	timer_init((zAchse.pwm),40000);
+	numberOfSteps(zAchse.pwm, 2000000);
 	
 
 }

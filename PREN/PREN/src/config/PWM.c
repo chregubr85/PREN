@@ -19,7 +19,7 @@ uint32_t g_steps_r1 = 0;
 uint32_t g_steps_r2 = 0;
 uint32_t count = 0;
 uint32_t captured = 0;
-bool flag_05_ms;
+uint32_t freq_temp = 0;
 
 /*Gibt den Wert für für das RC Register zurück, -> wie "weit" soll
 der Timer laufen.*/
@@ -69,39 +69,55 @@ int getPrescaler(int freq){
 		}
 }
 
-void ramp_up( t_PinPwm pin, int freq )
+void ramp_up( t_PinPwm pin )
 {
-	uint32_t freq_temp = 0;
-	tc_stop(pin.Timercounter, pin.channel);
+	int freq = 0;
+	int temp = 0;
+	//Zeitinterrupt 0.01s starten
+		tc_start(TC0, 1);
+	//Frequenz auslesen
+	if(pin.prescale == 0){
+		freq = (sysclk_get_peripheral_hz()/2)/tc_read_rc(pin.Timercounter, pin.channel);		
+	}
+	if(pin.prescale == 1){
+		freq = (sysclk_get_peripheral_hz()/8)/tc_read_rc(pin.Timercounter, pin.channel);
+	}
+	if(pin.prescale == 2){
+		freq = (sysclk_get_peripheral_hz()/32)/tc_read_rc(pin.Timercounter, pin.channel);
+	}
+	if(pin.prescale == 3){
+		freq = (sysclk_get_peripheral_hz()/128)/tc_read_rc(pin.Timercounter, pin.channel);
+	}
+	
+	//Rampe
 	while(freq_temp < freq){
 
-	tc_init(pin.Timercounter, pin.channel,
-	getPrescaler(freq_temp)
-	| TC_CMR_WAVE /* Waveform mode */
-	| TC_CMR_ACPA_SET /*Set bei RA */
-	| TC_CMR_ACPC_CLEAR /* Clear bei RC */
-	| TC_CMR_CPCTRG /* Trigger bei RC */
-	);
+		tc_stop(pin.Timercounter, pin.channel);
 		tc_write_rc(pin.Timercounter, pin.channel, getValueRCforFreq(freq_temp));
-		tc_write_ra(pin.Timercounter, pin.channel, getValueRAforDuty(50, freq_temp));
 		tc_start(pin.Timercounter, pin.channel);
-		if(flag_05_ms){
-		freq_temp= freq_temp +1;
-		}
+		
+	}
+	
+	if(freq_temp >= freq){
+		tc_stop(TC0,1);
+		freq_temp = 0;
 	}
 }
 
 
-void timer_init(t_PinPwm pin, int freq, int duty){
-	
+void timer_init( t_PinPwm pin, int freq )
+{
+	freq = 2*freq;
 	ioport_set_pin_mode(pin.pin_id, pin.mux);
 	ioport_disable_pin(pin.pin_id);
 	
 	sysclk_enable_peripheral_clock(pin.id);
+	pin.prescale = getPrescaler(freq);
 	
 	tc_init(pin.Timercounter, pin.channel,
-	getPrescaler(freq)
+	pin.prescale
 	| TC_CMR_WAVE /* Waveform mode */
+	| TC_CMR_WAVSEL_UPDOWN /*Center Allaigned*/
 	| TC_CMR_ACPA_SET /*Set bei RA */
 	| TC_CMR_ACPC_CLEAR /* Clear bei RC */
 	| TC_CMR_CPCTRG /* Trigger bei RC */
@@ -109,9 +125,8 @@ void timer_init(t_PinPwm pin, int freq, int duty){
 	/*Interrupt enable*/
 		pin.Timercounter->TC_CHANNEL[pin.channel].TC_IER = TC_IER_CPCS;
 		pin.Timercounter->TC_CHANNEL[pin.channel].TC_IER =~ TC_IDR_CPCS;
-	/*Wert für RA und RC schreiben*/					
-		tc_write_rc(pin.Timercounter, pin.channel, getValueRCforFreq(freq));
-		tc_write_ra(pin.Timercounter, pin.channel, getValueRAforDuty(duty, freq));	
+	/*Wert für RC schreiben*/					
+		tc_write_rc(pin.Timercounter, pin.channel, getValueRCforFreq(freq));	
 }
 
 void numberOfSteps(t_PinPwm pwm, int steps){
@@ -120,38 +135,34 @@ void numberOfSteps(t_PinPwm pwm, int steps){
 	if(pwm.Timercounter == TC0 && pwm.channel == 0){
 		g_steps_z = steps;
 		NVIC_EnableIRQ(TC0_IRQn);
-		tc_start(pwm.Timercounter, pwm.channel);
-		TC0_Handler();
+		ramp_up(pwm);
+		tc_start(pwm.Timercounter, pwm.channel);;
 	}
 	/*Interrupt PWM R1*/
 	if(pwm.Timercounter == TC2 && pwm.channel == 1){
 		g_steps_r1 = steps;
 		NVIC_EnableIRQ(TC7_IRQn);
+		ramp_up(pwm);
 		tc_start(pwm.Timercounter, pwm.channel);
-		TC7_Handler();
-
 	}
 	/*Interrupt PWM R2*/
 	if(pwm.Timercounter == TC2 && pwm.channel == 0){
 		g_steps_r2 = steps;
 		NVIC_EnableIRQ(TC6_IRQn);
+		ramp_up(pwm);
 		tc_start(pwm.Timercounter, pwm.channel);
-		TC6_Handler();
 	}
 }
+
+/*ISR TC1*/
 void TC1_Handler(){
 	tc_get_status(TC0, 1);
-	if(flag_05_ms){
-		flag_05_ms = false;
-	}
-	else{
-		flag_05_ms = true;
-	}
+	freq_temp = freq_temp +100;
 }
 
 /*ISR PWM2*/
 void TC0_Handler(){
-	tc_get_status(TC0, 0);
+	TC0->TC_CHANNEL[0].TC_SR;
 	count_z++;
 	if(count_z == g_steps_z){
 		tc_stop(TC0,0);
@@ -160,7 +171,7 @@ void TC0_Handler(){
 }
 /*ISR PWM3*/
 void TC7_Handler(){
-	tc_get_status(TC2, 1);
+	TC2->TC_CHANNEL[1].TC_SR;
 	count_r1++;
 	if(count_r1 == g_steps_r1){
 		tc_stop(TC2,1);
@@ -168,7 +179,7 @@ void TC7_Handler(){
 }
 /*ISR PWM5*/
 void TC6_Handler(){
-	tc_get_status(TC2, 0);
+	TC2->TC_CHANNEL[0].TC_SR;
 	count_r2++;
 	if(count_r2 == g_steps_r2){
 		tc_stop(TC2,0);
@@ -176,7 +187,7 @@ void TC6_Handler(){
 }
 /*ISR PWM11*/
 void TC8_Handler(){
-	tc_get_status(TC2,2);
+	TC2->TC_CHANNEL[2].TC_SR;
 	captured++;
 	printf("captured: %d\r",captured);
 }
@@ -184,11 +195,10 @@ void TC8_Handler(){
 /*ISR PIOD*/
 void PIOD_ISR(uint32_t id, uint32_t mask)
 {
-	if (ID_PIOD == id && PIO_PD0 == mask)
-	
+	if (ID_PIOD == id && PIO_PD0 == mask){
+	}	
 	if (ID_PIOD == id && PIO_PD1 == mask){
-	}
-	
+	}	
 	if (ID_PIOD == id && PIO_PD2 == mask){
 	}
 }

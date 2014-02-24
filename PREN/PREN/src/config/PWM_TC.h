@@ -17,6 +17,7 @@ typedef struct {
 		uint32_t id;
 		ioport_pin_t pin_id;
 		ioport_mode_t mux;
+		uint32_t prescale;
 	}t_PinPwm;
 	
 t_PinPwm pwm2;	
@@ -29,8 +30,8 @@ t_PinPwm pwm11;
 int getValueRCforFreq(int freq);
 int getValueRAforDuty(int duty, int freq);
 int getPrescaler(int freq);
-void timer_init(t_PinPwm pin, int freq, int duty);
-void ramp_up(t_PinPwm pin, int freq);
+void timer_init(t_PinPwm pin, int freq);
+void ramp_up(t_PinPwm pin);
 void numberOfSteps(t_PinPwm pwm, int steps);
 void PIOD_ISR(uint32_t id, uint32_t mask);
 #endif /* PWM_H_ */
