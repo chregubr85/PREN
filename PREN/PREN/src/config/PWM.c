@@ -20,6 +20,7 @@ uint32_t g_steps_r2 = 0;
 uint32_t count = 0;
 uint32_t captured = 0;
 uint32_t freq_temp = 0;
+bool flag = false;
 
 /*Gibt den Wert für für das RC Register zurück, -> wie "weit" soll
 der Timer laufen.*/
@@ -72,9 +73,6 @@ int getPrescaler(int freq){
 void ramp_up( t_PinPwm pin )
 {
 	int freq = 0;
-	int temp = 0;
-	//Zeitinterrupt 0.01s starten
-		tc_start(TC0, 1);
 	//Frequenz auslesen
 	if(pin.prescale == 0){
 		freq = (sysclk_get_peripheral_hz()/2)/tc_read_rc(pin.Timercounter, pin.channel);		
@@ -89,14 +87,19 @@ void ramp_up( t_PinPwm pin )
 		freq = (sysclk_get_peripheral_hz()/128)/tc_read_rc(pin.Timercounter, pin.channel);
 	}
 	
-	//Rampe
-	while(freq_temp < freq){
+	//Zeitinterrupt 0.01s starten
+	tc_start(TC0, 1);
 
+	//Rampe
+	do{
+	if(flag){
+		freq_temp = freq_temp+200;
 		tc_stop(pin.Timercounter, pin.channel);
 		tc_write_rc(pin.Timercounter, pin.channel, getValueRCforFreq(freq_temp));
 		tc_start(pin.Timercounter, pin.channel);
-		
-	}
+		flag = false;
+	} 
+	}while(freq_temp < freq);
 	
 	if(freq_temp >= freq){
 		tc_stop(TC0,1);
@@ -157,7 +160,7 @@ void numberOfSteps(t_PinPwm pwm, int steps){
 /*ISR TC1*/
 void TC1_Handler(){
 	tc_get_status(TC0, 1);
-	freq_temp = freq_temp +100;
+		flag = true;
 }
 
 /*ISR PWM2*/

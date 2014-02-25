@@ -119,6 +119,5 @@ int main (void)
 
 	timer_init((zAchse.pwm),40000);
 	numberOfSteps(zAchse.pwm, 2000000);
-	
-
+//tc_start(TC0, 1);
 }

@@ -10,10 +10,10 @@
 
 /*Setzt ein Pin von PIOC auf High*/	
 void setPinPIOC_high(uint32_t pin){
-	PIOC->PIO_SODR = zAchse.M1;
+	PIOC->PIO_SODR = pin;
 }
 
 /*Setzt ein Pin von PIOC auf Low*/
 void setPinPIOC_low(uint32_t pin){
-	PIOC->PIO_CODR = zAchse.M1;
+	PIOC->PIO_CODR = pin;
 }
