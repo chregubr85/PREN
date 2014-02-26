@@ -130,13 +130,13 @@ void board_init(void)
 			pwm5.pin_id = PIO_PC25_IDX;
 			pwm5.mux = IOPORT_MODE_MUX_B;
 		/*Struct füllen*/
-	r1.ALERT = PIO_PD2;
-	r1.M1 = PIO_PC12;
-	r1.M2 = PIO_PC13;
-	r1.M3 = PIO_PC14;
-	r1.ENBLE = PIO_PC15;
-	r1.pwm = pwm5;
-	r1.DirectionOfRotation = PIO_PC16;
+	r2.ALERT = PIO_PD2;
+	r2.M1 = PIO_PC12;
+	r2.M2 = PIO_PC13;
+	r2.M3 = PIO_PC14;
+	r2.ENBLE = PIO_PC15;
+	r2.pwm = pwm5;
+	r2.DirectionOfRotation = PIO_PC16;
 	
 	//PWM11 TIOA8
 	pwm11.Timercounter = TC2;

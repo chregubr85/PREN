@@ -70,22 +70,27 @@ int getPrescaler(int freq){
 		}
 }
 
-void ramp_up( t_PinPwm pin )
-{
-	int freq = 0;
-	//Frequenz auslesen
+int getFreqeunz(t_PinPwm pin){
 	if(pin.prescale == 0){
-		freq = (sysclk_get_peripheral_hz()/2)/tc_read_rc(pin.Timercounter, pin.channel);		
+		return (sysclk_get_peripheral_hz()/2)/tc_read_rc(pin.Timercounter, pin.channel);
 	}
 	if(pin.prescale == 1){
-		freq = (sysclk_get_peripheral_hz()/8)/tc_read_rc(pin.Timercounter, pin.channel);
+		return (sysclk_get_peripheral_hz()/8)/tc_read_rc(pin.Timercounter, pin.channel);
 	}
 	if(pin.prescale == 2){
-		freq = (sysclk_get_peripheral_hz()/32)/tc_read_rc(pin.Timercounter, pin.channel);
+		return (sysclk_get_peripheral_hz()/32)/tc_read_rc(pin.Timercounter, pin.channel);
 	}
 	if(pin.prescale == 3){
-		freq = (sysclk_get_peripheral_hz()/128)/tc_read_rc(pin.Timercounter, pin.channel);
+		return (sysclk_get_peripheral_hz()/128)/tc_read_rc(pin.Timercounter, pin.channel);
 	}
+}
+
+void ramp_up( t_PinPwm pin )
+{
+	int temp;
+	int freq = 0;
+	//Frequenz auslesen
+	freq = getFreqeunz(pin);
 	
 	//Zeitinterrupt 0.01s starten
 	tc_start(TC0, 1);
@@ -104,6 +109,7 @@ void ramp_up( t_PinPwm pin )
 	if(freq_temp >= freq){
 		tc_stop(TC0,1);
 		freq_temp = 0;
+		temp = count_z;
 	}
 }
 
@@ -175,9 +181,13 @@ void TC0_Handler(){
 /*ISR PWM3*/
 void TC7_Handler(){
 	TC2->TC_CHANNEL[1].TC_SR;
+	
+	
+	
 	count_r1++;
 	if(count_r1 == g_steps_r1){
 		tc_stop(TC2,1);
+		count_r1 = 0;
 	}
 }
 /*ISR PWM5*/
@@ -186,6 +196,7 @@ void TC6_Handler(){
 	count_r2++;
 	if(count_r2 == g_steps_r2){
 		tc_stop(TC2,0);
+		count_r2 = 0;
 	}
 }
 /*ISR PWM11*/

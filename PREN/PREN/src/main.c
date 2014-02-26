@@ -51,6 +51,9 @@ static void configure_console(void)
 
 int main (void)
 {
+	
+	uint8_t key;
+	
 	board_init();
 	sysclk_init();
 	configure_console();
@@ -118,6 +121,28 @@ int main (void)
 
 
 	timer_init((zAchse.pwm),40000);
-	numberOfSteps(zAchse.pwm, 2000000);
-//tc_start(TC0, 1);
+	timer_init((r1.pwm),40000);
+	timer_init((r2.pwm),40000);
+	
+	
+	puts("--z z Achse 200'000'000 Schritte\r--r r1 200'000'000 Schritte\r--t r2 200'000'000 Schritte");
+	
+	while(true){
+		
+	while (uart_read(CONSOLE_UART, &key));	
+		
+	switch(key){
+		case 'z':
+		numberOfSteps(zAchse.pwm, 200000);
+		break;
+		case 'r':
+		numberOfSteps(r1.pwm, 2000000);
+		break;
+		case 't':
+		numberOfSteps(r2.pwm, 2000000);
+		break;
+		default:
+		printf("%d is not used! \r\n", key);
+}
+	}
 }
