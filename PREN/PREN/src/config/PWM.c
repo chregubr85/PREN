@@ -98,7 +98,7 @@ void ramp_up( t_PinPwm pin )
 	//Rampe
 	do{
 	if(flag){
-		freq_temp = freq_temp+200;
+		freq_temp = freq_temp+10;
 		tc_stop(pin.Timercounter, pin.channel);
 		tc_write_rc(pin.Timercounter, pin.channel, getValueRCforFreq(freq_temp));
 		tc_start(pin.Timercounter, pin.channel);
@@ -181,13 +181,21 @@ void TC0_Handler(){
 /*ISR PWM3*/
 void TC7_Handler(){
 	TC2->TC_CHANNEL[1].TC_SR;
-	
-	
-	
+	uint32_t rc_soll = tc_read_rc(TC2, 1);
+	uint32_t rc_ramp;
+	if(!rc_ramp == rc_soll){
+		rc_ramp = rc_ramp +10;
+		tc_stop(TC2, 1);
+		tc_write_rc(TC2, 1, rc_ramp);
+		tc_start(TC2, 1);
+	}
+		
 	count_r1++;
+	
 	if(count_r1 == g_steps_r1){
 		tc_stop(TC2,1);
 		count_r1 = 0;
+		rc_ramp = 0;
 	}
 }
 /*ISR PWM5*/

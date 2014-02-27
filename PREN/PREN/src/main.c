@@ -53,12 +53,14 @@ int main (void)
 {
 	
 	uint8_t key;
+	int steps;
 	
 	board_init();
 	sysclk_init();
 	configure_console();
 
 //PWM11 Capture mode
+/*
 	ioport_set_pin_mode(ID_TC8, IOPORT_MODE_MUX_B);
 	ioport_disable_pin(ID_TC8);
 
@@ -74,6 +76,7 @@ int main (void)
 	NVIC_EnableIRQ(TC8_IRQn);
 	tc_start(TC2,2);
 	//
+	*/
 /*
 	pmc_enable_periph_clk(ID_PWM);
 	
@@ -120,26 +123,40 @@ int main (void)
 */
 
 
-	timer_init((zAchse.pwm),40000);
-	timer_init((r1.pwm),40000);
-	timer_init((r2.pwm),40000);
+	timer_init((zAchse.pwm),1000);
+	timer_init((r1.pwm),1000);
+	timer_init((r2.pwm),1000);
 	
 	
-	puts("--z z Achse 200'000'000 Schritte\r--r r1 200'000'000 Schritte\r--t r2 200'000'000 Schritte");
+	puts("--z z Achse \r--r r1 200'000'000 Schritte\r--t r2 200'000'000 Schritte\r");
 	
 	while(true){
 		
 	while (uart_read(CONSOLE_UART, &key));	
 		
 	switch(key){
+		case 'i':
+		setPinPIOC_low(zAchse.ENBLE);
+		setPinPIOC_low(r1.M1);
+		break;
 		case 'z':
 		numberOfSteps(zAchse.pwm, 200000);
+		delay_ms(500);
+		setPinPIOC_high(zAchse.ENBLE);
+		delay_ms(1000);
+		setPinPIOC_high(r1.M1);
 		break;
 		case 'r':
-		numberOfSteps(r1.pwm, 2000000);
+		printf("Anzahl Schritte: \r");
+		scanf("%d",(int) steps);
+		printf("Fahre %d Anzahl Schritte.\r", steps);
+		numberOfSteps(r1.pwm, steps);
 		break;
 		case 't':
-		numberOfSteps(r2.pwm, 2000000);
+		printf("Anzahl Schritte: \r");
+		scanf("%d",steps);
+		printf("Fahre %d Anzahl Schritte.\r", steps);
+		numberOfSteps(r2.pwm, steps);
 		break;
 		default:
 		printf("%d is not used! \r\n", key);
