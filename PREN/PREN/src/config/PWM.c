@@ -17,6 +17,8 @@ uint32_t count_r2 = 0;
 uint32_t g_steps_z = 0;
 uint32_t g_steps_r1 = 0;
 uint32_t g_steps_r2 = 0;
+uint32_t read_rc_pwm3 = 0;
+uint32_t rc_temp_pwm3 = 0;
 uint32_t count = 0;
 uint32_t captured = 0;
 uint32_t freq_temp = 0;
@@ -151,7 +153,7 @@ void numberOfSteps(t_PinPwm pwm, int steps){
 	if(pwm.Timercounter == TC2 && pwm.channel == 1){
 		g_steps_r1 = steps;
 		NVIC_EnableIRQ(TC7_IRQn);
-		ramp_up(pwm);
+	//	ramp_up(pwm);
 		tc_start(pwm.Timercounter, pwm.channel);
 	}
 	/*Interrupt PWM R2*/
@@ -181,21 +183,26 @@ void TC0_Handler(){
 /*ISR PWM3*/
 void TC7_Handler(){
 	TC2->TC_CHANNEL[1].TC_SR;
-	uint32_t rc_soll = tc_read_rc(TC2, 1);
-	uint32_t rc_ramp;
-	if(!rc_ramp == rc_soll){
-		rc_ramp = rc_ramp +10;
+	read_rc_pwm3 = tc_read_rc(TC2, 1);
+	
+	
+	if(rc_temp_pwm3 < read_rc_pwm3){
+		printf("RC PWM3: %d\r", rc_temp_pwm3);
+		rc_temp_pwm3 = rc_temp_pwm3 +10;
+		printf("RC PWM3: %d\r", rc_temp_pwm3);
 		tc_stop(TC2, 1);
-		tc_write_rc(TC2, 1, rc_ramp);
+		tc_write_rc(TC2, 1, rc_temp_pwm3);
 		tc_start(TC2, 1);
 	}
 		
 	count_r1++;
-	
+	printf("reached %d   %d\r", count_r1, g_steps_r1);
 	if(count_r1 == g_steps_r1){
+		
 		tc_stop(TC2,1);
 		count_r1 = 0;
-		rc_ramp = 0;
+		rc_temp_pwm3 = 0;
+		read_rc_pwm3 = 0;
 	}
 }
 /*ISR PWM5*/

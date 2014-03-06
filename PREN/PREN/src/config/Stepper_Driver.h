@@ -15,12 +15,13 @@
 
 typedef struct {
 	uint32_t ALERT;
+	uint32_t RESET;
 	uint32_t M1;
 	uint32_t M2;
 	uint32_t M3;
 	uint32_t ENBLE;
 	t_PinPwm pwm;
-	uint32_t DirectionOfRotation;
+	uint32_t CW_CCW;
 	}t_Stepper;
 
 t_Stepper zAchse;
