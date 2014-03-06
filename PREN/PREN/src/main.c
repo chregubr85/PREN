@@ -31,7 +31,7 @@
 #include "Stepper_Driver.h"
 #include "pwm.h"
 
-pwm_channel_t pwm_pin_8;
+
 pwm_channel_t pwm_pin_9;
 pwm_channel_t pwm_pin_7;
 
@@ -126,9 +126,10 @@ int main (void)
 	uint8_t key;
 	uint32_t steps;
 	
+	configure_console();
 	board_init();
 	sysclk_init();
-	configure_console();
+	
 
 //PWM11 Capture mode
 /*
@@ -199,7 +200,7 @@ int main (void)
 	timer_init((r2.pwm),1000);
 	
 	
-	puts("--z z Achse \r--r r1 200'000'000 Schritte\r--t r2 200'000'000 Schritte\r");
+	puts("--z z Achse \r--r r1 200'000'000 Schritte\r--t r2 200'000'000 Schritte\r--s Servo klemmen\r--l Servo öffnen\r");
 	
 	while(true){
 		
@@ -214,6 +215,7 @@ int main (void)
 		//setPinPIOC_low(zAchse.ENBLE);
 		//setPinPIOC_low(r1.M1);
 		break;
+		
 		case 'z':
 		numberOfSteps(zAchse.pwm, 200000);
 		delay_ms(500);
@@ -223,18 +225,33 @@ int main (void)
 		pio_set_pin_high(zAchse.RESET);
 		//setPinPIOC_high(r1.M1);
 		break;
+		
 		case 'r':
 		printf("Anzahl Schritte: \r");
 		steps = get_input_value(0, 9999);
 		printf("\rFahre %d Anzahl Schritte.\r", steps*100);
 		numberOfSteps(r1.pwm, steps*100);
 		break;
+		
 		case 't':
 		printf("Anzahl Schritte: \r");
 		scanf("%d",steps);
 		printf("Fahre %d Anzahl Schritte.\r", steps);
 		numberOfSteps(r2.pwm, steps);
 		break;
+		
+		case 's':
+		pwm_channel_init(PWM, &pwm8);
+		pwm_channel_enable(PWM, 5);
+		printf("pwm8 enable\r");
+		pwm_channel_update_duty(PWM, &pwm8, 100);
+		printf("pressed s\r");
+		break;
+		
+		case 'l':
+		
+		break;
+		
 		default:
 		printf("%d is not used! \r\n", key);
 }

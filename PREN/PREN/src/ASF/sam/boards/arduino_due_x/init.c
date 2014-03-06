@@ -143,8 +143,30 @@ void board_init(void)
 	pwm11.pin_id =PIO_PD7_IDX;
 	pwm11.mux = IOPORT_MODE_MUX_B;
 	
+	/*SERVO*/
+	//Clock Settings
+	pmc_enable_periph_clk(ID_PWM);
+	
+	pwm_clock_t clock_setting = {
+		.ul_clka = 5000,
+		.ul_clkb = 0,
+		.ul_mck = sysclk_get_cpu_hz()
+	};
+	pwm_init(PWM, &clock_setting);
+	
+		pwm8.alignment		= PWM_ALIGN_LEFT;
+		pwm8.polarity		= PWM_LOW;
+		pwm8.ul_prescaler	= PWM_CMR_CPRE_CLKA;
+		pwm8.ul_period		= 100;
+		pwm8.ul_duty		= 50;
+		pwm8.channel		= 5;
+		
+		pwm_channel_init(PWM, &pwm8);
+		pwm_channel_enable(PWM, 5);
+		printf("pwm8 enable\r");
+	
 	//Interrupts Enable für Alert
-	pio_handler_set(PIOA, ID_PIOA, PIO_PA15, PIO_IT_RISE_EDGE, PIOD_ISR);
+/*	pio_handler_set(PIOA, ID_PIOA, PIO_PA15, PIO_IT_RISE_EDGE, PIOD_ISR);
 	pio_enable_interrupt(PIOA, PIO_PA15);
 	NVIC_EnableIRQ(PIOA_IRQn);
 	
@@ -155,7 +177,7 @@ void board_init(void)
 	pio_handler_set(PIOC, ID_PIOC, PIO_PC8, PIO_IT_RISE_EDGE, PIOD_ISR);
 	pio_enable_interrupt(PIOD, PIO_PC8);
 	NVIC_EnableIRQ(PIOC_IRQn);
-	
+	*/
 	//TC1 mit 0.01s Interrupt
 	sysclk_enable_peripheral_clock(ID_TC1);
 	tc_init(TC0, 1,TC_CMR_TCCLKS_TIMER_CLOCK3
@@ -179,7 +201,7 @@ void board_init(void)
 	 */
 	ioport_init();
 	
-	
+	/*PWM 7,8,9*/
 	pio_configure_pin(PIO_PC21_IDX, PIO_PERIPH_B | PIO_DEFAULT);
 	pio_configure_pin(PIO_PC22_IDX, PIO_PERIPH_B | PIO_DEFAULT);
 	pio_configure_pin(PIO_PC23_IDX, PIO_PERIPH_B | PIO_DEFAULT);
@@ -214,8 +236,6 @@ void board_init(void)
 	/* Configure PWM LED0 pin */
 	gpio_configure_pin(PIN_PWM_LED0_GPIO, PIN_PWM_LED0_FLAGS);
 #endif
-
-	
 
 
 #ifdef CONF_BOARD_PWM_LED2

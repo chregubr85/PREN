@@ -24,7 +24,7 @@ t_PinPwm pwm2;
 t_PinPwm pwm3;
 t_PinPwm pwm5;
 t_PinPwm pwm11;
-
+pwm_channel_t pwm8;
 
 
 int getValueRCforFreq(int freq);
