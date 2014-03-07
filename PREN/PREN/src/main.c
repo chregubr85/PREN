@@ -46,13 +46,12 @@ static void configure_console(void)
 	/* Configure console UART. */
 	sysclk_enable_peripheral_clock(CONSOLE_UART_ID);
 	stdio_serial_init(CONF_UART, &uart_serial_options);
-	
 }
 
 static uint32_t get_input_value(uint32_t ul_lower_limit, uint32_t ul_upper_limit)
 {
-	uint32_t i = 0, length = 0, value = 0;
-	uint8_t uc_key, str_temp[5] = { 0 };
+	uint32_t i = 0, length = 0, value = 0, str_temp[5] = { 0 };
+	uint8_t uc_key;
 
 	while (1) {
 		usart_serial_getchar((Usart *)CONSOLE_UART, &uc_key);
@@ -107,6 +106,22 @@ static uint32_t get_input_value(uint32_t ul_lower_limit, uint32_t ul_upper_limit
 				
 				case 6:
 				value += (str_temp[i] - '0') * 1000000;
+				break;
+				
+				case 7:
+				value += (str_temp[i] - '0') * 10000000;
+				break;
+				
+				case 8:
+				value += (str_temp[i] - '0') * 100000000;
+				break;
+				
+				case 9:
+				value += (str_temp[i] - '0') * 1000000000;
+				break;
+				
+				case 10:
+				value += (str_temp[i] - '0') * 10000000000;
 				break;
 			}
 		}
@@ -207,7 +222,6 @@ int main (void)
 	while (uart_read(CONSOLE_UART, &key));	
 		
 		
-		
 	switch(key){
 		case 'i':
 		pio_set_pin_low(zAchse.ENBLE);
@@ -241,19 +255,15 @@ int main (void)
 		break;
 		
 		case 's':
-		pwm_channel_init(PWM, &pwm8);
-		pwm_channel_enable(PWM, 5);
-		printf("pwm8 enable\r");
-		pwm_channel_update_duty(PWM, &pwm8, 100);
-		printf("pressed s\r");
+		pwm_channel_update_duty(PWM, &pwm8, 80);
 		break;
 		
 		case 'l':
-		
+		pwm_channel_update_duty(PWM, &pwm8, 20);
 		break;
 		
 		default:
 		printf("%d is not used! \r\n", key);
-}
+		}
 	}
 }

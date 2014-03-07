@@ -154,18 +154,18 @@ void board_init(void)
 	};
 	pwm_init(PWM, &clock_setting);
 	
-		pwm8.alignment		= PWM_ALIGN_LEFT;
-		pwm8.polarity		= PWM_LOW;
-		pwm8.ul_prescaler	= PWM_CMR_CPRE_CLKA;
-		pwm8.ul_period		= 100;
-		pwm8.ul_duty		= 50;
-		pwm8.channel		= 5;
+	pwm8.alignment		= PWM_ALIGN_LEFT;
+	pwm8.polarity		= PWM_LOW;
+	pwm8.ul_prescaler	= PWM_CMR_CPRE_CLKA;
+	pwm8.ul_period		= 100;
+	pwm8.ul_duty		= 50;
+	pwm8.channel		= 5;
 		
-		pwm_channel_init(PWM, &pwm8);
-		pwm_channel_enable(PWM, 5);
-		printf("pwm8 enable\r");
+	pwm_channel_init(PWM, &pwm8);
+	pwm_channel_enable(PWM, 5);
+	printf("pwm8 enable\r");
 	
-	//Interrupts Enable für Alert
+	//Interrupts Enable für Alert  #TODO
 /*	pio_handler_set(PIOA, ID_PIOA, PIO_PA15, PIO_IT_RISE_EDGE, PIOD_ISR);
 	pio_enable_interrupt(PIOA, PIO_PA15);
 	NVIC_EnableIRQ(PIOA_IRQn);
@@ -190,6 +190,14 @@ void board_init(void)
 	TC0->TC_CHANNEL[1].TC_IER =~ TC_IDR_CPCS;
 	NVIC_EnableIRQ(TC1_IRQn);
 	
+	/*PWM 7,8,9*/
+	pio_configure_pin(PIO_PC21_IDX, PIO_PERIPH_B | PIO_DEFAULT);
+	pio_configure_pin(PIO_PC22_IDX, PIO_PERIPH_B | PIO_DEFAULT);
+	pio_configure_pin(PIO_PC23_IDX, PIO_PERIPH_B | PIO_DEFAULT);
+	
+	/*ARDUINO DEFINED*/
+	
+	
 #ifndef CONF_BOARD_KEEP_WATCHDOG_AT_INIT
 	/* Disable the watchdog */
 	WDT->WDT_MR = WDT_MR_WDDIS;
@@ -201,18 +209,9 @@ void board_init(void)
 	 */
 	ioport_init();
 	
-	/*PWM 7,8,9*/
-	pio_configure_pin(PIO_PC21_IDX, PIO_PERIPH_B | PIO_DEFAULT);
-	pio_configure_pin(PIO_PC22_IDX, PIO_PERIPH_B | PIO_DEFAULT);
-	pio_configure_pin(PIO_PC23_IDX, PIO_PERIPH_B | PIO_DEFAULT);
-	
-	
-	
 	/* Configure Push Button pins */
 	gpio_configure_pin(GPIO_PUSH_BUTTON_1, GPIO_PUSH_BUTTON_1_FLAGS);
 	//gpio_configure_pin(GPIO_PUSH_BUTTON_2, GPIO_PUSH_BUTTON_2_FLAGS);
-
-
 
 
 #ifdef CONF_BOARD_UART_CONSOLE

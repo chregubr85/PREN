@@ -165,11 +165,6 @@ void numberOfSteps(t_PinPwm pwm, int steps){
 	}
 }
 
-/*ISR TC1*/
-void TC1_Handler(){
-	tc_get_status(TC0, 1);
-		flag = true;
-}
 
 /*ISR PWM2*/
 void TC0_Handler(){
@@ -180,6 +175,14 @@ void TC0_Handler(){
 		count_z = 0;
 	}
 }
+
+/*ISR TC1*/
+void TC1_Handler(){
+	tc_get_status(TC0, 1);
+	flag = true;
+}
+
+
 /*ISR PWM3*/
 void TC7_Handler(){
 	TC2->TC_CHANNEL[1].TC_SR;
@@ -205,6 +208,7 @@ void TC7_Handler(){
 		read_rc_pwm3 = 0;
 	}
 }
+
 /*ISR PWM5*/
 void TC6_Handler(){
 	TC2->TC_CHANNEL[0].TC_SR;
@@ -214,6 +218,7 @@ void TC6_Handler(){
 		count_r2 = 0;
 	}
 }
+
 /*ISR PWM11*/
 void TC8_Handler(){
 	TC2->TC_CHANNEL[2].TC_SR;
