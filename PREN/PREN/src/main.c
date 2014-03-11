@@ -34,7 +34,9 @@
 
 pwm_channel_t pwm_pin_9;
 pwm_channel_t pwm_pin_7;
-
+uint8_t comand = 0;
+uint32_t uart_data = 0;
+uint8_t uart_count_bytes = 0;
 
 static void configure_console(void)
 {
@@ -46,6 +48,10 @@ static void configure_console(void)
 	/* Configure console UART. */
 	sysclk_enable_peripheral_clock(CONSOLE_UART_ID);
 	stdio_serial_init(CONF_UART, &uart_serial_options);
+	
+	uart_disable_interrupt(CONSOLE_UART, 0xffffffff);
+	uart_enable_interrupt(CONSOLE_UART, 0x00000001);
+	NVIC_EnableIRQ(UART_IRQn);
 }
 
 static uint32_t get_input_value(uint32_t ul_lower_limit, uint32_t ul_upper_limit)
@@ -135,6 +141,20 @@ static uint32_t get_input_value(uint32_t ul_lower_limit, uint32_t ul_upper_limit
 	return value;
 }
 
+uint32_t read4bytes(void){
+	uint32_t data = 0;
+	uint8_t temp =0;
+	uint8_t i = 0;
+	
+	if(i == 0){
+		uart_read(CONSOLE_UART, &temp);
+		uart_disable_rx(CONSOLE_UART);
+		data = temp;
+		i++;
+	}
+	return data;
+}
+
 int main (void)
 {
 	
@@ -215,10 +235,11 @@ int main (void)
 	timer_init((r2.pwm),1000);
 	
 	
-	puts("--z z Achse \r--r r1 200'000'000 Schritte\r--t r2 200'000'000 Schritte\r--s Servo klemmen\r--l Servo öffnen\r");
+	//puts("--z z Achse \r--r r1 200'000'000 Schritte\r--t r2 200'000'000 Schritte\r--s Servo klemmen\r--l Servo öffnen\r");
+	
 	
 	while(true){
-		
+/*		
 	while (uart_read(CONSOLE_UART, &key));	
 		
 		
@@ -265,5 +286,137 @@ int main (void)
 		default:
 		printf("%d is not used! \r\n", key);
 		}
+		*/
+
+if(!(uart_get_status(CONSOLE_UART) & UART_SR_RXRDY))
+	while (uart_read(CONSOLE_UART, &key));	
+	
+		switch(key){
+			case 'a':
+			//printf("read: %d\r", read4bytes());
+			printf("comand: %d\r", comand);
+			printf("data: %d\r", uart_data);
+			printf("count : %d\r", uart_count_bytes);
+			break;
+			
+			case 0x01:
+			
+			break;
+			
+			case 0x02:
+			
+			break;
+			
+			case 0x03:
+			
+			break;
+			
+			case 0x04:
+			
+			break;
+			
+			case 0x05:
+			
+			break;
+			
+			case 0x06:
+			
+			break;
+			
+			case 0x07:
+			
+			break;
+			
+			case 0x08:
+			
+			break;
+			
+			case 0x09:
+			
+			break;
+			
+			case 0x0A:
+			
+			break;
+			
+			case 0x0B:
+			
+			break;
+			
+			case 0x0C:
+			
+			break;
+			
+			case 0x0D:
+			
+			break;
+			
+			case 0x0E:
+			
+			break;
+			
+			case 0x0F:
+			
+			break;
+			
+			case 0x10:
+			
+			break;
+			
+			case 0x11:
+			
+			break;
+			
+			case 0x12:
+			
+			break;
+			
+			case 0x13:
+			
+			break;
+			
+			case 0x14:
+			
+			break;
+			
+			case 0x15:
+			
+			break;
+			
+			default:
+			printf("%d is not used! \r\n", key);
+		}
+		
+		
 	}
+}
+
+void UART_Handler(){
+	uint8_t temp = 0;
+	
+	uart_read(CONSOLE_UART, &temp);
+	
+	if(uart_count_bytes == 0){
+		comand = temp;
+		uart_data = 0;
+	}
+	
+	if(uart_count_bytes == 1){
+		uart_data = temp;
+	}
+	
+	if(uart_count_bytes == 2){
+		uart_data =(uart_data << 8) + temp;
+	}
+	
+	if(uart_count_bytes == 3){
+		uart_data =(uart_data << 8) + temp;
+	}
+	
+	if(uart_count_bytes == 4){
+		uart_data =(uart_data << 8) + temp;
+		uart_disable_interrupt(CONSOLE_UART, 0xffffffff);
+		uart_count_bytes = 0;
+	}
+	uart_count_bytes++;
 }

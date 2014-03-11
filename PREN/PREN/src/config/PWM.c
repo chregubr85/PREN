@@ -190,16 +190,13 @@ void TC7_Handler(){
 	
 	
 	if(rc_temp_pwm3 < read_rc_pwm3){
-		printf("RC PWM3: %d\r", rc_temp_pwm3);
 		rc_temp_pwm3 = rc_temp_pwm3 +10;
-		printf("RC PWM3: %d\r", rc_temp_pwm3);
 		tc_stop(TC2, 1);
 		tc_write_rc(TC2, 1, rc_temp_pwm3);
 		tc_start(TC2, 1);
 	}
 		
 	count_r1++;
-	printf("reached %d   %d\r", count_r1, g_steps_r1);
 	if(count_r1 == g_steps_r1){
 		
 		tc_stop(TC2,1);
@@ -223,7 +220,6 @@ void TC6_Handler(){
 void TC8_Handler(){
 	TC2->TC_CHANNEL[2].TC_SR;
 	captured++;
-	printf("captured: %d\r",captured);
 }
 
 /*ISR PIOD*/

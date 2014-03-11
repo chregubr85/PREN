@@ -163,7 +163,6 @@ void board_init(void)
 		
 	pwm_channel_init(PWM, &pwm8);
 	pwm_channel_enable(PWM, 5);
-	printf("pwm8 enable\r");
 	
 	//Interrupts Enable für Alert  #TODO
 /*	pio_handler_set(PIOA, ID_PIOA, PIO_PA15, PIO_IT_RISE_EDGE, PIOD_ISR);
