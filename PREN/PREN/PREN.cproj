@@ -574,6 +574,12 @@
     <Compile Include="src\config\Stepper_Driver.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\config\uart_buff.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\config\uart_buff.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\main.c">
       <SubType>compile</SubType>
     </Compile>

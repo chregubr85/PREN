@@ -30,6 +30,7 @@
 #include "PWM_TC.h"
 #include "Stepper_Driver.h"
 #include "pwm.h"
+#include "uart_buff.h"
 
 
 pwm_channel_t pwm_pin_9;
@@ -42,7 +43,8 @@ static void configure_console(void)
 {
 	const usart_serial_options_t uart_serial_options = {
 		.paritytype = CONF_UART_PARITY,
-		.baudrate = CONF_UART_BAUDRATE
+		.baudrate = CONF_UART_BAUDRATE,
+		.stopbits = false
 	};
 	
 	/* Configure console UART. */
@@ -50,8 +52,12 @@ static void configure_console(void)
 	stdio_serial_init(CONF_UART, &uart_serial_options);
 	
 	uart_disable_interrupt(CONSOLE_UART, 0xffffffff);
-	uart_enable_interrupt(CONSOLE_UART, 0x00000001);
+	uart_enable_interrupt(CONSOLE_UART, 0x00000101);
 	NVIC_EnableIRQ(UART_IRQn);
+	
+	uart_enable_tx(CONSOLE_UART);
+	
+	uart_buff_init();
 }
 
 static uint32_t get_input_value(uint32_t ul_lower_limit, uint32_t ul_upper_limit)
@@ -141,25 +147,13 @@ static uint32_t get_input_value(uint32_t ul_lower_limit, uint32_t ul_upper_limit
 	return value;
 }
 
-uint32_t read4bytes(void){
-	uint32_t data = 0;
-	uint8_t temp =0;
-	uint8_t i = 0;
-	
-	if(i == 0){
-		uart_read(CONSOLE_UART, &temp);
-		uart_disable_rx(CONSOLE_UART);
-		data = temp;
-		i++;
-	}
-	return data;
-}
 
 int main (void)
 {
 	
-	uint8_t key;
+	unsigned int key;
 	uint32_t steps;
+	unsigned int temp;
 	
 	configure_console();
 	board_init();
@@ -235,9 +229,8 @@ int main (void)
 	timer_init((r2.pwm),1000);
 	
 	
-	//puts("--z z Achse \r--r r1 200'000'000 Schritte\r--t r2 200'000'000 Schritte\r--s Servo klemmen\r--l Servo öffnen\r");
-	
-	
+	puts("--z z Achse \r--r r1 200'000'000 Schritte\r--t r2 200'000'000 Schritte\r--s Servo klemmen\r--l Servo öffnen\r");
+
 	while(true){
 /*		
 	while (uart_read(CONSOLE_UART, &key));	
@@ -288,15 +281,26 @@ int main (void)
 		}
 		*/
 
-if(!(uart_get_status(CONSOLE_UART) & UART_SR_RXRDY))
-	while (uart_read(CONSOLE_UART, &key));	
-	
+
+
+
+	key = uart_getc();	
+	if (key & UART_NO_DATA )
+        {
+            /* 
+             * no data available from UART 
+             */
+		}
+	else
+	{
 		switch(key){
-			case 'a':
+			case 0x00:
 			//printf("read: %d\r", read4bytes());
-			printf("comand: %d\r", comand);
+			printf("comand: %d\r", temp);
 			printf("data: %d\r", uart_data);
 			printf("count : %d\r", uart_count_bytes);
+			printf("key: %d", key);
+			uart_putc((unsigned char) key);
 			break;
 			
 			case 0x01:
@@ -304,7 +308,15 @@ if(!(uart_get_status(CONSOLE_UART) & UART_SR_RXRDY))
 			break;
 			
 			case 0x02:
-			
+					temp = uart_getc();
+					uart_data = (unsigned char) temp;
+					temp = uart_getc();
+					uart_data =(uart_data << 8) + (unsigned char) temp;
+					temp = uart_getc();
+					uart_data =(uart_data << 8) + (unsigned char) temp;
+					temp = uart_getc();
+					uart_data =(uart_data << 8) + (unsigned char) temp;
+			printf("UART_Data: %d\r", uart_data)	;	
 			break;
 			
 			case 0x03:
@@ -385,38 +397,7 @@ if(!(uart_get_status(CONSOLE_UART) & UART_SR_RXRDY))
 			
 			default:
 			printf("%d is not used! \r\n", key);
+			}
 		}
-		
-		
 	}
-}
-
-void UART_Handler(){
-	uint8_t temp = 0;
-	
-	uart_read(CONSOLE_UART, &temp);
-	
-	if(uart_count_bytes == 0){
-		comand = temp;
-		uart_data = 0;
-	}
-	
-	if(uart_count_bytes == 1){
-		uart_data = temp;
-	}
-	
-	if(uart_count_bytes == 2){
-		uart_data =(uart_data << 8) + temp;
-	}
-	
-	if(uart_count_bytes == 3){
-		uart_data =(uart_data << 8) + temp;
-	}
-	
-	if(uart_count_bytes == 4){
-		uart_data =(uart_data << 8) + temp;
-		uart_disable_interrupt(CONSOLE_UART, 0xffffffff);
-		uart_count_bytes = 0;
-	}
-	uart_count_bytes++;
 }
