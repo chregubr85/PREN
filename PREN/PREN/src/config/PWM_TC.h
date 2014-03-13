@@ -28,7 +28,6 @@ pwm_channel_t pwm8;
 
 
 int getValueRCforFreq(int freq);
-int getValueRAforDuty(int duty, int freq);
 int getPrescaler(int freq);
 int getFreqeunz(t_PinPwm pin);
 void timer_init(t_PinPwm pin, int freq);

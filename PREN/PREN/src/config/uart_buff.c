@@ -155,3 +155,155 @@ void uart_puts(const char *s )
 
 }/* uart_puts */
 
+
+uint32_t get_input_value( void )
+{
+	uint32_t i = 0, length = 0, value = 0, str_temp[10] = { 0 };
+	unsigned int uc_key;
+
+	while (1) {
+		uc_key = uart_getc();
+	 	if (uc_key & UART_NO_DATA )
+	       {
+	            //no data available from UART
+		}
+		else
+ 	{
+		
+		if (uc_key == '\n' || uc_key == '\r') {
+			uart_putc("\r");
+			break;
+		}
+
+		if ('0' <= uc_key && '9' >= uc_key) {
+			printf("%c", uc_key);
+			str_temp[i++] = uc_key;
+
+			if (i >= 10) {
+				break;
+			}
+		}
+	}
+	}
+	str_temp[i] = '\0';
+	/* Input string length */
+	length = i;
+	value = 0;
+
+	/* Convert string to integer */
+	for (i = 0; i < 10; i++) {
+		if (str_temp[i] != '0') {
+			switch (length - i - 1) {
+				case 0:
+				value += (str_temp[i] - '0');
+				break;
+
+				case 1:
+				value += (str_temp[i] - '0') * 10;
+				break;
+
+				case 2:
+				value += (str_temp[i] - '0') * 100;
+				break;
+
+				case 3:
+				value += (str_temp[i] - '0') * 1000;
+				break;
+				
+				case 4:
+				value += (str_temp[i] - '0') * 10000;
+				break;
+				
+				case 5:
+				value += (str_temp[i] - '0') * 100000;
+				break;
+				
+				case 6:
+				value += (str_temp[i] - '0') * 1000000;
+				break;
+				
+				case 7:
+				value += (str_temp[i] - '0') * 10000000;
+				break;
+				
+				case 8:
+				value += (str_temp[i] - '0') * 100000000;
+				break;
+				
+				case 9:
+				value += (str_temp[i] - '0') * 1000000000;
+				break;
+				
+				case 10:
+				value += (str_temp[i] - '0') * 10000000000;
+				break;
+			}
+		}
+	}
+
+	return value;
+}
+
+
+/*Returns the 4 Data-Bytes*/
+uint32_t uart_get_data(void)
+{
+	uint32_t uart_data = 0;
+	unsigned int temp;
+	uint8_t count = 0;
+	
+	while(count<=4)
+	{
+		temp = uart_getc();
+		if(temp & UART_NO_DATA)
+		{
+			/*no data available from UART*/
+			return UART_ERROR;
+		}
+		else
+		{
+			if(count <1)
+			{
+				uart_data = (unsigned char) temp;
+				count++;
+			}
+			else
+			{
+				uart_data =(uart_data << 8) + (unsigned char) temp;
+				count++;
+			}
+		}
+	}
+	
+	return uart_data;
+}
+
+
+void uart_send(uint32_t data)
+{
+	if(data == UART_ERROR)
+	{
+				uart_putc(UART_NOK);
+				uart_putc(UART_EMPTY);
+				uart_putc(UART_EMPTY);
+				uart_putc(UART_EMPTY);
+				uart_putc(UART_EMPTY);
+	}
+	if(data == UART_INIT_OK)
+	{
+		uart_putc(UART_INIT);
+		uart_putc(UART_EMPTY);
+		uart_putc(UART_EMPTY);
+		uart_putc(UART_EMPTY);
+		uart_putc(UART_EMPTY);
+	}
+	else
+	{
+				uart_putc(UART_OK);
+				uart_putc(UART_EMPTY);
+				uart_putc(UART_EMPTY);
+				uart_putc(UART_EMPTY);
+				uart_putc(UART_EMPTY);
+	}
+	
+}

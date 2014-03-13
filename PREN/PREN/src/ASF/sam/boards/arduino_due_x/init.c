@@ -70,12 +70,12 @@ void board_init(void)
 		
 	/*Struct füllen*/
 	zAchse.ALERT	= PIO_PA15;
-	zAchse.M1		= PIO_PD0;
-	zAchse.M2		= PIO_PD1;
-	zAchse.M3		= PIO_PD2;
-	zAchse.ENBLE	= PIO_PD3;
-	zAchse.RESET	= PIO_PD9;
-	zAchse.CW_CCW	= PIO_PD6;
+	zAchse.M1		= PIO_PD0_IDX;
+	zAchse.M2		= PIO_PD1_IDX;
+	zAchse.M3		= PIO_PD2_IDX;
+	zAchse.ENBLE	= PIO_PD3_IDX;
+	zAchse.RESET	= PIO_PD9_IDX;
+	zAchse.CW_CCW	= PIO_PD6_IDX;
 	zAchse.pwm		= pwm2;
 	
 	
@@ -99,12 +99,12 @@ void board_init(void)
 		
 	/*Struct füllen*/
 	r1.ALERT	= PIO_PD10;
-	r1.M1		= PIO_PC1;
-	r1.M2		= PIO_PC2;
-	r1.M3		= PIO_PC3;
-	r1.ENBLE	= PIO_PC4;
-	r1.CW_CCW	= PIO_PC5;
-	r1.RESET	= PIO_PC6;
+	r1.M1		= PIO_PC1_IDX;
+	r1.M2		= PIO_PC2_IDX;
+	r1.M3		= PIO_PC3_IDX;
+	r1.ENBLE	= PIO_PC4_IDX;
+	r1.CW_CCW	= PIO_PC5_IDX;
+	r1.RESET	= PIO_PC6_IDX;
 	r1.pwm		= pwm3;
 	
 	
@@ -127,12 +127,12 @@ void board_init(void)
 			
 		/*Struct füllen*/
 	r2.ALERT	= PIO_PC8;
-	r2.M1		= PIO_PC9;
-	r2.M2		= PIO_PA19;
-	r2.M3		= PIO_PA20;
-	r2.ENBLE	= PIO_PC19;
-	r2.CW_CCW	= PIO_PC18;
-	r2.RESET	= PIO_PC17;
+	r2.M1		= PIO_PC9_IDX;
+	r2.M2		= PIO_PA19_IDX;
+	r2.M3		= PIO_PA20_IDX;
+	r2.ENBLE	= PIO_PC19_IDX;
+	r2.CW_CCW	= PIO_PC18_IDX;
+	r2.RESET	= PIO_PC17_IDX;
 	r2.pwm		= pwm5;
 	
 	

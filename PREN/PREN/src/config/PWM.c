@@ -45,13 +45,6 @@ int getValueRCforFreq(int freq){
 	return (timerCLK/freq);	
 }
 
-/*Gibt den Wert für das RA Register zurück. Das RA Register bestimmt
-den Dutycycle (0-100%) des PWM's)*/
-int getValueRAforDuty(int duty, int freq){
-	
-	return ((((100-duty)*getValueRCforFreq(freq))/100));	
-}
-	
 /*Gibt den Prescaler (MCK/2, MCK/8, MCK/32 oder MCK/128) für die gewünschte
 Frequenz zurück*/
 int getPrescaler(int freq){
