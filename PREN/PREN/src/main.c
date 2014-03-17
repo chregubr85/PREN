@@ -33,9 +33,13 @@
 #include "uart_buff.h"
 
 
+
 pwm_channel_t pwm_pin_9;
-pwm_channel_t pwm_pin_7;
+
 uint32_t cubePositions [3][6] ;
+
+int i,j;
+
 
 static void configure_console(void)
 {
@@ -91,239 +95,219 @@ int main (void)
 	tc_start(TC2,2);
 	//
 	*/
-/*
-	pmc_enable_periph_clk(ID_PWM);
-	
-	pwm_clock_t clock_setting = {
-		.ul_clka = 100000,
-		.ul_clkb = 0,
-		.ul_mck = sysclk_get_cpu_hz()
-	};
-	
-	pwm_init(PWM, &clock_setting);
-	
-	pwm_pin_7.alignment		= PWM_ALIGN_LEFT;
-	pwm_pin_7.polarity		= PWM_LOW;
-	pwm_pin_7.ul_prescaler	= 0b1010;
-	pwm_pin_7.ul_period		= 100;
-	pwm_pin_7.ul_duty		= 50;
-	pwm_pin_7.channel		= 6;
-	
-	
-	pwm_channel_init(PWM, &pwm_pin_7);
-	pwm_channel_enable(PWM, 6);
-
-////
-	pwm_pin_8.alignment		= PWM_ALIGN_LEFT;
-	pwm_pin_8.polarity		= PWM_LOW;
-	pwm_pin_8.ul_prescaler	= PWM_CMR_CPRE_CLKA;
-	pwm_pin_8.ul_period		= 100;
-	pwm_pin_8.ul_duty		= 50;
-	pwm_pin_8.channel		= 5;
-	
-	pwm_channel_init(PWM, &pwm_pin_8);
-	pwm_channel_enable(PWM, 5);
-	////
-	pwm_pin_9.alignment		= PWM_ALIGN_LEFT;
-	pwm_pin_9.polarity		= PWM_LOW;
-	pwm_pin_9.ul_prescaler	= PWM_CMR_CPRE_CLKA;
-	pwm_pin_9.ul_period		= 100;
-	pwm_pin_9.ul_duty		= 50;
-	pwm_pin_9.channel		= 4;
-		
-	pwm_channel_init(PWM, &pwm_pin_9);
-	pwm_channel_enable(PWM, 4);
-//
-*/
+// 
 
 
 	timer_init((zAchse.pwm),10000);
 	timer_init((r1.pwm),1000);
 	timer_init((r2.pwm),1000);
 	
-	
-	puts("--z z Achse \r--r r1 200'000'000 Schritte\r--t r2 200'000'000 Schritte\r--s Servo klemmen\r--l Servo öffnen\r");
+		puts("--z z Achse \r--r r1 200'000'000 Schritte\r--t r2 200'000'000 Schritte\r--s Servo klemmen\r--l Servo öffnen\r--m Servo in Mittelstellung\r");
+
 
 	while(true){
 		
+
+	
+	key = uart_getc();
+	 	if (key & UART_NO_DATA )
+	        {
+	             //no data available from UART
+			}
+	 	else
+ 		{			
+		switch(key){
+			case 'i':
+			pio_set_pin_low(zAchse.ENBLE);
+			pio_set_pin_low(zAchse.RESET);
+			setPinPIOC_low(zAchse.ENBLE);
+			//setPinPIOC_low(r1.M1);
+			break;
+		
+			case 'z':
+			numberOfSteps(zAchse.pwm, 2000000);
+			//delay_ms(1000);
+			pio_set_pin_high(zAchse.ENBLE);
+		//	printf("Enable High\r");
+		//	delay_ms(500);
+			pio_set_pin_high(zAchse.RESET);
+		//	printf("Reset High\r");
+			break;
+		
+			case 'r':
+			printf("Anzahl Schritte: \r");
+			steps = get_input_value();
+			printf("\rFahre %d Anzahl Schritte.\r", steps);
+			numberOfSteps(r1.pwm, steps);
+			break;
+		
+			case 't':
+			printf("Anzahl Schritte: \r");
+			steps = get_input_value();
+			printf("\rFahre %d Anzahl Schritte.\r", steps);	
+			numberOfSteps(r2.pwm, steps);
+			break;
+		
+			case 's':
+			pwm_channel_update_duty(PWM, &pwm_pin_7, 5);
+			break;
+		
+			case 'l':
+			pwm_channel_update_duty(PWM, &pwm_pin_7, 11.5);
+			break;
+			
+			case 'm':
+			pwm_channel_update_duty(PWM, &pwm_pin_7, 8);
+			break;
+		
+			default:
+			printf("%d is not used! \r\n", key);
+			}
+		 }
+
+
+
+
+
+
 /*
-// 	key = uart_getc();
-// 	 	if (key & UART_NO_DATA )
-// 	        {
-// 	           / *
-// 	             *no data available from UART
-//               * /
-// 			}
-// 	 	else
-//  		{			
-// 		switch(key){
-// 			case 'i':
-// 			pio_set_pin_low(zAchse.ENBLE);
-// 			pio_set_pin_low(zAchse.RESET);
-// 			setPinPIOC_low(zAchse.ENBLE);
-// 			//setPinPIOC_low(r1.M1);
-// 			break;
-// 		
-// 			case 'z':
-// 			numberOfSteps(zAchse.pwm, 2000000);
-// 			//delay_ms(1000);
-// 			pio_set_pin_high(zAchse.ENBLE);
-// 		//	printf("Enable High\r");
-// 		//	delay_ms(500);
-// 			pio_set_pin_high(zAchse.RESET);
-// 		//	printf("Reset High\r");
-// 			break;
-// 		
-// 			case 'r':
-// 			printf("Anzahl Schritte: \r");
-// 			steps = get_input_value();
-// 			printf("\rFahre %d Anzahl Schritte.\r", steps);
-// 			numberOfSteps(r1.pwm, steps);
-// 			break;
-// 		
-// 			case 't':
-// 			printf("Anzahl Schritte: \r");
-// 			steps = get_input_value();
-// 			printf("\rFahre %d Anzahl Schritte.\r", steps);	
-// 			numberOfSteps(r2.pwm, steps);
-// 			break;
-// 		
-// 			case 's':
-// 			pwm_channel_update_duty(PWM, &pwm8, 80);
-// 			break;
-// 		
-// 			case 'l':
-// 			pwm_channel_update_duty(PWM, &pwm8, 20);
-// 			break;
-// 		
-// 			default:
-// 			printf("%d is not used! \r\n", key);
-// 			}
-// 		 }
-*/
-
-
-
-
 
 	key = uart_getc();	
 	if (key & UART_NO_DATA )
         {
-            /*no data available from UART*/
+            / *no data available from UART* /
 		}
 	else
 	{
 		switch(key){
+			printf("KEY: %d\r", key);
 			case 0x00:
 				uart_send((uint32_t) UART_EMPTY);
 			break;
 			
-			case 0x01: /*Initialisieren */
-				/* TODO Initialisieren uint32_t INIT_OK = init(void) */
+			case 0x01: / *Initialisieren * /
+				/ * TODO Initialisieren uint32_t INIT_OK = init(void) * /
 			//	uart_send(INIT_OK);
 			break;
 			
-			case 0x02: /*Würfel 1 R1 */
+			case 0x02: / *Würfel 1 R1 * /
 				cubePositions[0][0] =	uart_get_data();
 				uart_send(cubePositions[0][0]);
+
 			break;
 			
-			case 0x03: /*Würfel 1 R2 */
+			case 0x03: / *Würfel 1 R2 * /
 				cubePositions[1][0] =	uart_get_data();
 				uart_send(cubePositions[1][0]);			
 			break;
 			
-			case 0x04: /*Würfel 1 Phi */
+			case 0x04: / *Würfel 1 Phi * /
 				cubePositions[2][0] =	uart_get_data();
 				uart_send(cubePositions[2][0]);			
 			break;
 			
-			case 0x05: /*Würfel 2 R1 */
+			case 0x05: / *Würfel 2 R1 * /
 				cubePositions[0][1] =	uart_get_data();
 				uart_send(cubePositions[0][1]);			
 			break;
 			
-			case 0x06: /*Würfel 2 R2 */
+			case 0x06: / *Würfel 2 R2 * /
 				cubePositions[1][1] =	uart_get_data();
 				uart_send(cubePositions[1][1]);			
 			break;
 			
-			case 0x07: /*Würfel 2 Phi */
+			case 0x07: / *Würfel 2 Phi * /
 				cubePositions[2][1] =	uart_get_data();
 				uart_send(cubePositions[2][1]);			
 			break;
 			
-			case 0x08: /*Würfel 3 R1 */
+			case 0x08: / *Würfel 3 R1 * /
 				cubePositions[0][2] =	uart_get_data();
 				uart_send(cubePositions[0][2]);			
 			break;
 			
-			case 0x09: /*Würfel 3 R2 */
+			case 0x09: / *Würfel 3 R2 * /
 				cubePositions[1][2] =	uart_get_data();
 				uart_send(cubePositions[1][2]);			
 			break;
 			
-			case 0x0A: /*Würfel 3 Phi */
+			case 0x0A: / *Würfel 3 Phi * /
 				cubePositions[2][2] =	uart_get_data();
 				uart_send(cubePositions[2][2]);			
 			break;
 			
-			case 0x0B: /*Würfel 4 R1 */
+			case 0x0B: / *Würfel 4 R1 * /
 				cubePositions[0][3] =	uart_get_data();
 				uart_send(cubePositions[0][3]);			
 			break;
 			
-			case 0x0C: /*Würfel 4 R2 */
+			case 0x0C: / *Würfel 4 R2 * /
 				cubePositions[1][3] =	uart_get_data();
 				uart_send(cubePositions[1][3]);			
 			break;
 			
-			case 0x0D: /*Würfel 4 Phi */
+			case 0x0D: / *Würfel 4 Phi * /
 				cubePositions[2][3] =	uart_get_data();
 				uart_send(cubePositions[2][3]);			
 			break;
 			
-			case 0x0E: /*Würfel 5 R1 */
+			case 0x0E: / *Würfel 5 R1 * /
 				cubePositions[0][4] =	uart_get_data();
 				uart_send(cubePositions[0][4]);			
 			break;
 			
-			case 0x0F: /*Würfel 5 R2 */
+			case 0x0F: / *Würfel 5 R2 * /
 				cubePositions[1][4] =	uart_get_data();
 				uart_send(cubePositions[1][4]);			
 			break;
 			
-			case 0x10: /*Würfel 5 Phi */
+			case 0x10: / *Würfel 5 Phi * /
 				cubePositions[2][4] =	uart_get_data();
 				uart_send(cubePositions[2][4]);			
 			break;
 			
-			case 0x11: /*Würfel 6 R1 */
+			case 0x11: / *Würfel 6 R1 * /
 				cubePositions[0][5] =	uart_get_data();
 				uart_send(cubePositions[0][5]);			
 			break;
 			
-			case 0x12: /*Würfel 6 R2 */
+			case 0x12: / *Würfel 6 R2 * /
 				cubePositions[1][5] =	uart_get_data();
 				uart_send(cubePositions[1][5]);			
 			break;
 			
-			case 0x13: /*Würfel 6 Phy */
+			case 0x13: / *Würfel 6 Phy * /
 				cubePositions[2][5] =	uart_get_data();
 				uart_send(cubePositions[2][5]);			
 			break;
 			
-			case 0x14: /*Alle Daten erhalten*/
-				/* TODO Würfel einsammeln, Turm stellen*/
+			case 0x14: / *Alle Daten erhalten* /
+			
+/ *
+			      for (i=0;i<3;i++)
+			      {
+				      printf("\r\r");
+				      
+				      for(j=0;j<6;j++)
+				      {
+					      printf("%d**",(*(*(cubePositions+i)+j)));
+				      }
+			      }
+			      printf("\r");
+* /
+			
+			
+				/ * TODO Würfel einsammeln, Turm stellen* /
 			break;
 			
-			case 0x1f: /*Turm stellen erzwingen*/
-			/* TODO Turm stellen */
+			case 0x1f: / *Turm stellen erzwingen* /
+			/ * TODO Turm stellen * /
 			break;			
 
 			default:
 				printf("ERROR\r");
 			}
-		}
+*/
+//		}
 	}
 }

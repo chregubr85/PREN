@@ -30,7 +30,6 @@ void UART_Handler(){
 	   unsigned char lastRxError;
 	   unsigned char tmptail;
 	
-	
 	if(uart_get_status(CONSOLE_UART) & UART_SR_RXRDY){
 		uart_read(CONSOLE_UART, &data);
 		
@@ -252,13 +251,17 @@ uint32_t uart_get_data(void)
 	unsigned int temp;
 	uint8_t count = 0;
 	
-	while(count<=4)
+	delay_ms(1);
+	
+	while(count<=3)
 	{
 		temp = uart_getc();
+
 		if(temp & UART_NO_DATA)
 		{
 			/*no data available from UART*/
 			return UART_ERROR;
+		
 		}
 		else
 		{
@@ -283,11 +286,11 @@ void uart_send(uint32_t data)
 {
 	if(data == UART_ERROR)
 	{
-				uart_putc(UART_NOK);
-				uart_putc(UART_EMPTY);
-				uart_putc(UART_EMPTY);
-				uart_putc(UART_EMPTY);
-				uart_putc(UART_EMPTY);
+		uart_putc(UART_NOK);
+		uart_putc(UART_EMPTY);
+		uart_putc(UART_EMPTY);
+		uart_putc(UART_EMPTY);
+		uart_putc(UART_EMPTY);
 	}
 	if(data == UART_INIT_OK)
 	{
@@ -299,11 +302,11 @@ void uart_send(uint32_t data)
 	}
 	else
 	{
-				uart_putc(UART_OK);
-				uart_putc(UART_EMPTY);
-				uart_putc(UART_EMPTY);
-				uart_putc(UART_EMPTY);
-				uart_putc(UART_EMPTY);
+		uart_putc(UART_OK);
+		uart_putc(UART_EMPTY);
+		uart_putc(UART_EMPTY);
+		uart_putc(UART_EMPTY);
+		uart_putc(UART_EMPTY);
 	}
 	
 }

@@ -154,15 +154,15 @@ void board_init(void)
 	};
 	pwm_init(PWM, &clock_setting);
 	
-	pwm8.alignment		= PWM_ALIGN_LEFT;
-	pwm8.polarity		= PWM_LOW;
-	pwm8.ul_prescaler	= PWM_CMR_CPRE_CLKA;
-	pwm8.ul_period		= 100;
-	pwm8.ul_duty		= 50;
-	pwm8.channel		= 5;
+	pwm_pin_7.alignment		= PWM_ALIGN_LEFT;
+	pwm_pin_7.polarity		= PWM_LOW;
+	pwm_pin_7.ul_prescaler	= PWM_CMR_CPRE_CLKA;
+	pwm_pin_7.ul_period		= 100;
+	pwm_pin_7.ul_duty		= 8;
+	pwm_pin_7.channel		= 6;
 		
-	pwm_channel_init(PWM, &pwm8);
-	pwm_channel_enable(PWM, 5);
+	pwm_channel_init(PWM, &pwm_pin_7);
+	pwm_channel_enable(PWM, 6);
 	
 	//Interrupts Enable für Alert  #TODO
 /*	pio_handler_set(PIOA, ID_PIOA, PIO_PA15, PIO_IT_RISE_EDGE, PIOD_ISR);
