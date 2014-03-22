@@ -11,18 +11,16 @@
 #include <stdarg.h>
 #include "Stepper_Driver.h"
 
+#define STEPS_RAMP 1000
+
 uint32_t count_z = 0;
 uint32_t count_r1 = 0;
 uint32_t count_r2 = 0;
 uint32_t g_steps_z = 0;
 uint32_t g_steps_r1 = 0;
 uint32_t g_steps_r2 = 0;
-uint32_t read_rc_pwm3 = 0;
-uint32_t rc_temp_pwm3 = 0;
-uint32_t count = 0;
 uint32_t captured = 0;
-uint32_t freq_temp = 0;
-bool flag = false;
+
 
 /*Gibt den Wert für für das RC Register zurück, -> wie "weit" soll
 der Timer laufen.*/
@@ -80,33 +78,7 @@ int getFreqeunz(t_PinPwm pin){
 	}
 }
 
-void ramp_up( t_PinPwm pin )
-{
-	int temp;
-	int freq = 0;
-	//Frequenz auslesen
-	freq = getFreqeunz(pin);
-	
-	//Zeitinterrupt 0.01s starten
-	tc_start(TC0, 1);
 
-	//Rampe
-	do{
-	if(flag){
-		freq_temp = freq_temp+10;
-		tc_stop(pin.Timercounter, pin.channel);
-		tc_write_rc(pin.Timercounter, pin.channel, getValueRCforFreq(freq_temp));
-		tc_start(pin.Timercounter, pin.channel);
-		flag = false;
-	} 
-	}while(freq_temp < freq);
-	
-	if(freq_temp >= freq){
-		tc_stop(TC0,1);
-		freq_temp = 0;
-		temp = count_z;
-	}
-}
 
 
 void timer_init( t_PinPwm pin, int freq )
@@ -122,8 +94,8 @@ void timer_init( t_PinPwm pin, int freq )
 	pin.prescale
 	| TC_CMR_WAVE /* Waveform mode */
 	| TC_CMR_WAVSEL_UPDOWN /*Center Allaigned*/
-	| TC_CMR_ACPA_SET /*Set bei RA */
-	| TC_CMR_ACPC_CLEAR /* Clear bei RC */
+	| TC_CMR_ACPA_CLEAR /*Set bei RA */				
+	| TC_CMR_ACPC_SET /* Clear bei RC */
 	| TC_CMR_CPCTRG /* Trigger bei RC */
 	);
 	/*Interrupt enable*/
@@ -135,31 +107,30 @@ void timer_init( t_PinPwm pin, int freq )
 
 void numberOfSteps(t_PinPwm pwm, int steps){
 	
+	
+	
 	/*Interrupt PWM Z-Achse*/
 	if(pwm.Timercounter == TC0 && pwm.channel == 0){
 		g_steps_z = steps;
 		NVIC_EnableIRQ(TC0_IRQn);
-		ramp_up(pwm);
 		tc_start(pwm.Timercounter, pwm.channel);;
 	}
 	/*Interrupt PWM R1*/
 	if(pwm.Timercounter == TC2 && pwm.channel == 1){
 		g_steps_r1 = steps;
 		NVIC_EnableIRQ(TC7_IRQn);
-	//	ramp_up(pwm);
 		tc_start(pwm.Timercounter, pwm.channel);
 	}
 	/*Interrupt PWM R2*/
 	if(pwm.Timercounter == TC2 && pwm.channel == 0){
 		g_steps_r2 = steps;
 		NVIC_EnableIRQ(TC6_IRQn);
-		ramp_up(pwm);
 		tc_start(pwm.Timercounter, pwm.channel);
 	}
 }
 
 
-/*ISR PWM2*/
+/*ISR PWM2 Z-ACHSE*/
 void TC0_Handler(){
 	TC0->TC_CHANNEL[0].TC_SR;
 	count_z++;
@@ -169,33 +140,15 @@ void TC0_Handler(){
 	}
 }
 
-/*ISR TC1*/
-void TC1_Handler(){
-	tc_get_status(TC0, 1);
-	flag = true;
-}
 
 
 /*ISR PWM3*/
 void TC7_Handler(){
 	TC2->TC_CHANNEL[1].TC_SR;
-	read_rc_pwm3 = tc_read_rc(TC2, 1);
-	
-	
-	if(rc_temp_pwm3 < read_rc_pwm3){
-		rc_temp_pwm3 = rc_temp_pwm3 +10;
-		tc_stop(TC2, 1);
-		tc_write_rc(TC2, 1, rc_temp_pwm3);
-		tc_start(TC2, 1);
-	}
-		
 	count_r1++;
 	if(count_r1 == g_steps_r1){
-		
 		tc_stop(TC2,1);
 		count_r1 = 0;
-		rc_temp_pwm3 = 0;
-		read_rc_pwm3 = 0;
 	}
 }
 

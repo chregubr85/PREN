@@ -22,6 +22,8 @@ typedef struct {
 	uint32_t ENBLE;
 	t_PinPwm pwm;
 	uint32_t CW_CCW;
+	uint32_t ENC_A;
+	uint32_t ENC_B;
 	}t_Stepper;
 
 t_Stepper zAchse;

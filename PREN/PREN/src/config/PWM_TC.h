@@ -31,7 +31,6 @@ int getValueRCforFreq(int freq);
 int getPrescaler(int freq);
 int getFreqeunz(t_PinPwm pin);
 void timer_init(t_PinPwm pin, int freq);
-void ramp_up(t_PinPwm pin);
 void numberOfSteps(t_PinPwm pwm, int steps);
 void PIOD_ISR(uint32_t id, uint32_t mask);
 #endif /* PWM_H_ */

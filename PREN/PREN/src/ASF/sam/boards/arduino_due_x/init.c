@@ -60,6 +60,8 @@ void board_init(void)
 		pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD3, PIO_DEFAULT);	//ENABLE
 		pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD6, PIO_DEFAULT);	//CW/CCW
 		pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD9, PIO_DEFAULT);	//RESET
+		pio_configure(PIOC, PIO_INPUT, PIO_PC15, PIO_PULLUP);		//Encoder Channel A
+		pio_configure(PIOC, PIO_INPUT, PIO_PC14, PIO_PULLUP);		//Encoder Channel B
 		
 		//PWM2 TIOA0
 		pwm2.Timercounter = TC0;
@@ -77,6 +79,9 @@ void board_init(void)
 	zAchse.RESET	= PIO_PD9_IDX;
 	zAchse.CW_CCW	= PIO_PD6_IDX;
 	zAchse.pwm		= pwm2;
+	zAchse.ENC_A	= PIO_PC15_IDX;
+	zAchse.ENC_B	= PIO_PC14_IDX;
+
 	
 	
 
@@ -89,6 +94,8 @@ void board_init(void)
 		pio_configure(PIOC, PIO_OUTPUT_0, PIO_PC4, PIO_DEFAULT);	//ENABLE
 		pio_configure(PIOC, PIO_OUTPUT_0, PIO_PC5, PIO_DEFAULT);	//CW/CCW
 		pio_configure(PIOC, PIO_OUTPUT_0, PIO_PC6, PIO_DEFAULT);	//RESET
+		pio_configure(PIOC, PIO_INPUT, PIO_PC13, PIO_PULLUP);		//Encoder Channel A
+		pio_configure(PIOC, PIO_INPUT, PIO_PC12, PIO_PULLUP);		//Encoder Channel B		
 		
 		//PWM3 TIOA7
 		pwm3.Timercounter = TC2;
@@ -106,7 +113,8 @@ void board_init(void)
 	r1.CW_CCW	= PIO_PC5_IDX;
 	r1.RESET	= PIO_PC6_IDX;
 	r1.pwm		= pwm3;
-	
+	r1.ENC_A	= PIO_PC13_IDX;
+	r1.ENC_B	= PIO_PC12_IDX;
 	
 	
 	/*Pin Deffinieren für Stepper1 R2*/
@@ -117,6 +125,8 @@ void board_init(void)
 			pio_configure(PIOC, PIO_OUTPUT_0, PIO_PC19, PIO_DEFAULT);	//ENABLE
 			pio_configure(PIOC, PIO_OUTPUT_0, PIO_PC18, PIO_DEFAULT);	//CW/CCW
 			pio_configure(PIOC, PIO_OUTPUT_0, PIO_PC17, PIO_DEFAULT);	//RESET
+			pio_configure(PIOB, PIO_INPUT, PIO_PC21, PIO_PULLUP);		//Encoder Channel A
+			pio_configure(PIOB, PIO_INPUT, PIO_PC14, PIO_PULLUP);		//Encoder Channel B			
 			
 			//PWM5 TIOA6
 			pwm5.Timercounter=TC2;
@@ -134,6 +144,8 @@ void board_init(void)
 	r2.CW_CCW	= PIO_PC18_IDX;
 	r2.RESET	= PIO_PC17_IDX;
 	r2.pwm		= pwm5;
+	r2.ENC_A	= PIO_PB21_IDX;
+	r2.ENC_B	= PIO_PB14_IDX;
 	
 	
 	//PWM11 TIOA8
@@ -148,7 +160,7 @@ void board_init(void)
 	pmc_enable_periph_clk(ID_PWM);
 	
 	pwm_clock_t clock_setting = {
-		.ul_clka = 5000,
+		.ul_clka = 20000, //50Hz
 		.ul_clkb = 0,
 		.ul_mck = sysclk_get_cpu_hz()
 	};
@@ -158,7 +170,7 @@ void board_init(void)
 	pwm_pin_7.polarity		= PWM_LOW;
 	pwm_pin_7.ul_prescaler	= PWM_CMR_CPRE_CLKA;
 	pwm_pin_7.ul_period		= 100;
-	pwm_pin_7.ul_duty		= 8;
+	pwm_pin_7.ul_duty		= 30;
 	pwm_pin_7.channel		= 6;
 		
 	pwm_channel_init(PWM, &pwm_pin_7);
@@ -188,6 +200,7 @@ void board_init(void)
 	TC0->TC_CHANNEL[1].TC_IER = TC_IER_CPCS;
 	TC0->TC_CHANNEL[1].TC_IER =~ TC_IDR_CPCS;
 	NVIC_EnableIRQ(TC1_IRQn);
+	
 	
 	/*PWM 7,8,9*/
 	pio_configure_pin(PIO_PC21_IDX, PIO_PERIPH_B | PIO_DEFAULT);

@@ -562,6 +562,9 @@
     <None Include="src\config\conf_uart_serial.h">
       <SubType>compile</SubType>
     </None>
+    <Compile Include="src\config\encode.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\config\PWM.c">
       <SubType>compile</SubType>
     </Compile>
