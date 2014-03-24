@@ -5,7 +5,7 @@
  *  Author: Christian
  */ 
 #include <asf.h>
-#include "Stepper_Driver.h"
+#include "PWM_TC.h"
 
 
 
@@ -13,9 +13,22 @@ volatile int8_t enc_delta_z, enc_delta_r1, enc_delta_r2;          // -128 ... 12
 static int8_t last_z, last_r1, last_r2;
 
 
-void encode_init( void )
+void encode_init( t_PinPwm pwm )
 {
 	int8_t new_z, new_r1, new_r2 = 0;
+	
+	if(pwm.pin_id == PIO_PB25_IDX) //Aufruf von ZAchse
+	{
+		active[0] = true;
+	}
+	if(pwm.pin_id == PIO_PC28_IDX) //Aufruf von R1
+	{
+		active[1] = true;
+	}
+	if(pwm.pin_id == PIO_PC25_IDX) //Aufruf von R2
+	{
+		active[2] = true;
+	}		
 	
 	//ZAchse:
 	if( pio_get_pin_value(zAchse.ENC_A) )

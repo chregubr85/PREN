@@ -12,7 +12,7 @@
 int8_t encode_zAchse_read4(void);  
 int8_t encode_r1_read4(void);
 int8_t encode_r2_read4(void);
-void encode_init( void );
+void encode_init( t_PinPwm pwm );
 
 
 

@@ -13,22 +13,14 @@
 #include "PWM_TC.h"
 
 
-typedef struct {
-	uint32_t ALERT;
-	uint32_t RESET;
-	uint32_t M1;
-	uint32_t M2;
-	uint32_t M3;
-	uint32_t ENBLE;
-	t_PinPwm pwm;
-	uint32_t CW_CCW;
-	uint32_t ENC_A;
-	uint32_t ENC_B;
-	}t_Stepper;
+
 
 t_Stepper zAchse;
 t_Stepper r1;
 t_Stepper r2;
+
+int32_t encode[3];	// Array mit den Encoderwerten für Z-Achse, R1 und R2
+bool active[3];		//Aktivitätsüberwachung der drei Achsen (false = nicht aktiv)
 
 void setPinPIOC_high(uint32_t pin);
 void setPinPIOC_low(uint32_t pin);

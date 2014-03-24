@@ -24,13 +24,36 @@ t_PinPwm pwm2;
 t_PinPwm pwm3;
 t_PinPwm pwm5;
 t_PinPwm pwm11;
+
+typedef struct {
+	uint32_t ALERT;
+	uint32_t RESET;
+	uint32_t M1;
+	uint32_t M2;
+	uint32_t M3;
+	uint32_t ENBLE;
+	t_PinPwm pwm;
+	uint32_t CW_CCW;
+	uint32_t ENC_A;
+	uint32_t ENC_B;
+}t_Stepper;
+
+t_Stepper zAchse;
+t_Stepper r1;
+t_Stepper r2;
+
 pwm_channel_t pwm_pin_7; //Servo
+
+int32_t encode[3];	// Array mit den Encoderwerten für Z-Achse, R1 und R2
+bool active[3];		//Aktivitätsüberwachung der drei Achsen (false = nicht aktiv)
+
+
 
 
 int getValueRCforFreq(int freq);
 int getPrescaler(int freq);
 int getFreqeunz(t_PinPwm pin);
 void timer_init(t_PinPwm pin, int freq);
-void numberOfSteps(t_PinPwm pwm, int steps);
+void numberOfSteps(t_Stepper axis, int steps);
 void PIOD_ISR(uint32_t id, uint32_t mask);
 #endif /* PWM_H_ */

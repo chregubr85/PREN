@@ -28,7 +28,6 @@
 #include "conf_board.h"
 #include "conf_clock.h"
 #include "PWM_TC.h"
-#include "Stepper_Driver.h"
 #include "pwm.h"
 #include "uart_buff.h"
 #include "encoder.h"
@@ -101,15 +100,17 @@ int main (void)
 
 
 	timer_init((zAchse.pwm),1100);
-	timer_init((r1.pwm),1000);
-	timer_init((r2.pwm),1000);
+	timer_init((r1.pwm),1100);
+	timer_init((r2.pwm),1100);
 	
-		puts("--z z Achse \r--r r1 200'000'000 Schritte\r--t r2 200'000'000 Schritte\r--s Servo klemmen\r--l Servo öffnen\r--m Servo in Mittelstellung\r");
+		puts("--z z Achse \r--r r1 \r--t r2 \r--s Servo klemmen\r--l Servo öffnen\r--m Servo in Mittelstellung\r");
 
 
 	while(true){
-		
-
+		//test Achse aktiv
+	if(active[0] == false && active[1] == false && active[2] == false){
+		tc_stop(TC0, 1);
+	}
 	
 
 	key = uart_getc();
@@ -121,48 +122,63 @@ int main (void)
  		{			
 		switch(key){
 			case 'i':
-			numberOfSteps(zAchse.pwm, 200000000);
-			while(true){
-			tc_stop(TC0, 0);
-			tc_write_rc(TC0, 0, getValueRCforFreq(freq_temp));
-			tc_start(TC0, 0);
-			printf("new Freq: %d\r", freq_temp/2);
-			delay_ms(500);
-			freq_temp = freq_temp+20;
-			}
+			pio_set_pin_high(r1.RESET);
+			pio_set_pin_low(r1.CW_CCW);
+			pio_set_pin_low(r1.ENBLE);
+			pio_set_pin_low(r1.M1);
+			pio_set_pin_low(r1.M2);
+			pio_set_pin_high(r1.M3);
+			numberOfSteps(r1, 2000);
+
+			pio_set_pin_high(r2.RESET);
+			pio_set_pin_high(r2.CW_CCW);
+			pio_set_pin_low(r2.ENBLE);
+			pio_set_pin_low(r2.M1);
+			pio_set_pin_low(r2.M2);
+			pio_set_pin_high(r2.M3);			
+			numberOfSteps(r2, 5000);		
+			
+			pio_set_pin_high(zAchse.RESET);
+			pio_set_pin_low(zAchse.CW_CCW);
+			pio_set_pin_low(zAchse.ENBLE);
+			pio_set_pin_low(zAchse.M1);
+			pio_set_pin_low(zAchse.M2);
+			pio_set_pin_high(zAchse.M3);			
+			numberOfSteps(zAchse, 3000);	
+
 			break;
 		
 			case 'z':
 			pio_set_pin_high(zAchse.RESET);
 			pio_set_pin_high(zAchse.CW_CCW);
-			pio_set_pin_low(zAchse.ENBLE);	
-			encode_init();	
+			pio_set_pin_low(zAchse.ENBLE);		
 			printf("Anzahl Schritte: \r");
 			steps = get_input_value();
 			printf("\rFahre %d Schritte.\r", steps);
-			numberOfSteps(zAchse.pwm, steps);
+			numberOfSteps(zAchse, steps);
 			break;
 		
 			case 'r':
 			pio_set_pin_high(r1.RESET);
 			pio_set_pin_low(r1.CW_CCW);
 			pio_set_pin_low(r1.ENBLE);
-			encode_init();
 			printf("Anzahl Schritte: \r");
 			steps = get_input_value();
 			printf("\rFahre %d Schritte.\r", steps);
-			numberOfSteps(r1.pwm, steps);
+			numberOfSteps(r1, steps);
 			break;
 		
 			case 't':
 			pio_set_pin_high(r2.RESET);
 			pio_set_pin_low(r2.CW_CCW);
 			pio_set_pin_low(r2.ENBLE);
-			encode_init();
+			pio_set_pin_high(r2.M1);
+			pio_set_pin_high(r2.M2);
+			pio_set_pin_low(r2.M3);			
 			printf("Anzahl Schritte: \r");
 			steps = get_input_value();
 			printf("\rFahre %d Schritte.\r", steps);
-			numberOfSteps(r2.pwm, steps);
+			numberOfSteps(r2, steps);
 			break;
 		
 			case 's':

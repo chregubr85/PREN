@@ -46,8 +46,7 @@
 #include "conf_board.h"
 #include "gpio.h"
 #include "ioport.h"
-#include "PWM.h"
-#include "Stepper_Driver.h"
+#include "PWM_TC.h"
 
 
 void board_init(void)
