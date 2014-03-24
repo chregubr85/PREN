@@ -5,15 +5,8 @@
  *  Author: Christian
  */ 
 #include <asf.h>
+#include "Stepper_Driver.h"
 
-
-#define XTAL        8e6         // 8MHz
-
-#define PHASE_A     (PINA & 1<<PA1)
-#define PHASE_B     (PINA & 1<<PA3)
-
-#define LEDS_DDR    DDRC
-#define LEDS        PORTC           // LEDs against VCC
 
 
 volatile int8_t enc_delta;          // -128 ... 127
@@ -25,56 +18,37 @@ void encode_init( void )
 	int8_t new;
 	
 	new = 0;
-	if( PHASE_A )
+	if( zAchse.ENC_A )
 	new = 3;
-	if( PHASE_B )
-	new ^= 1;                   // convert gray to binary
+	if( zAchse.ENC_B )
+	new ^= 1;                 // convert gray to binary
 	last = new;                   // power on state
 	enc_delta = 0;
-	TCCR0 = 1<<WGM01^1<<CS01^1<<CS00;     // CTC, XTAL / 64
-	OCR0 = (uint8_t)(XTAL / 64.0 * 1e-3 - 0.5);   // 1ms
-	TIMSK |= 1<<OCIE0;
+	tc_start(TC0, 1);
 }
 
 
-ISR( TIMER0_COMP_vect )             // 1ms for manual movement
+TC1_Handler(void)
 {
-	int8_t new, diff;
-	
-	new = 0;
-	if( PHASE_A )
-	new = 3;
-	if( PHASE_B )
-	new ^= 1;                   // convert gray to binary
-	diff = last - new;                // difference last - new
-	if( diff & 1 ){               // bit 0 = value (1)
-		last = new;                 // store new as next last
-		enc_delta += (diff & 2) - 1;        // bit 1 = direction (+/-)
-	}
-}
+	TC0->TC_CHANNEL[1].TC_SR;
+		
+
+		int8_t new, diff;
+		
+		new = 0;
+		if( pio_get_pin_value(zAchse.ENC_A) ){
+		new = 3;
+		}
+		if( pio_get_pin_value(zAchse.ENC_B) ){
+		new ^= 1;                   // convert gray to binary 
+		}
+		diff = last - new;                // difference last - new
+		if( diff & 1 ){             // bit 0 = value (1)
+			last = new;                 // store new as next last
+			enc_delta += (diff & 2) - 1;        // bit 1 = direction (+/-)
+		}
 
 
-int8_t encode_read1( void )         // read single step encoders
-{
-	int8_t val;
-	
-	cli();
-	val = enc_delta;
-	enc_delta = 0;
-	sei();
-	return val;                   // counts since last call
-}
-
-
-int8_t encode_read2( void )         // read two step encoders
-{
-	int8_t val;
-	
-	cli();
-	val = enc_delta;
-	enc_delta = val & 1;
-	sei();
-	return val >> 1;
 }
 
 
@@ -82,24 +56,14 @@ int8_t encode_read4( void )         // read four step encoders
 {
 	int8_t val;
 	
-	cli();
+	TC0->TC_CHANNEL[1].TC_IDR = TC_IER_CPCS;
+	TC0->TC_CHANNEL[1].TC_IDR =~ TC_IDR_CPCS;
 	val = enc_delta;
 	enc_delta = val & 3;
-	sei();
+	TC0->TC_CHANNEL[1].TC_IER = TC_IER_CPCS;
+	TC0->TC_CHANNEL[1].TC_IER =~ TC_IDR_CPCS;
 	return val >> 2;
 }
 
 
-int main( void )
-{
-	int32_t val = 0;
-	
-	LEDS_DDR = 0xFF;
-	encode_init();
-	sei();
-	
-	for(;;){
-		val += encode_read1();          // read a single step encoder
-		LEDS = val;
-	}
-}
+
