@@ -189,13 +189,13 @@ void board_init(void)
 	pio_enable_interrupt(PIOD, PIO_PC8);
 	NVIC_EnableIRQ(PIOC_IRQn);
 	*/
-	//TC1 mit 0.01s Interrupt
+	//TC1 mit 0.0001s Interrupt
 	sysclk_enable_peripheral_clock(ID_TC1);
-	tc_init(TC0, 1,TC_CMR_TCCLKS_TIMER_CLOCK3
+	tc_init(TC0, 1,TC_CMR_TCCLKS_TIMER_CLOCK1
 	| TC_CMR_WAVE /* Waveform mode */
 	| TC_CMR_WAVSEL_UP_RC
 	);
-	tc_write_rc(TC0, 1, 26250);
+	tc_write_rc(TC0, 1, 2800);
 	/*Interrupt enable*/
 	TC0->TC_CHANNEL[1].TC_IER = TC_IER_CPCS;
 	TC0->TC_CHANNEL[1].TC_IER =~ TC_IDR_CPCS;

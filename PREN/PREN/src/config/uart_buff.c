@@ -169,7 +169,7 @@ uint32_t get_input_value( void )
 		else
  	{
 		
-		if (uc_key == '\n' || uc_key == '\r') {
+		if (uc_key == '\n' || uc_key == '\r' || uc_key == ']') {
 			uart_putc("\r");
 			break;
 		}

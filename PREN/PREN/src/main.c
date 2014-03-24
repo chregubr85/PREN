@@ -31,10 +31,12 @@
 #include "Stepper_Driver.h"
 #include "pwm.h"
 #include "uart_buff.h"
+#include "encoder.h"
 
 //Variablen
 unsigned int key = 0;
 uint32_t cubePositions [3][6] ;
+
 
 int i,j;
 
@@ -69,6 +71,8 @@ int main (void)
 
 	uint32_t steps;
 	unsigned int temp;
+	uint32_t freq_temp = 2000;
+	
 	
 	configure_console();
 	board_init();
@@ -96,7 +100,7 @@ int main (void)
 // 
 
 
-	timer_init((zAchse.pwm),1000);
+	timer_init((zAchse.pwm),1100);
 	timer_init((r1.pwm),1000);
 	timer_init((r2.pwm),1000);
 	
@@ -117,15 +121,22 @@ int main (void)
  		{			
 		switch(key){
 			case 'i':
-			pio_set_pin_low(zAchse.ENBLE);
-			pio_set_pin_low(zAchse.RESET);
-			setPinPIOC_low(zAchse.ENBLE);
+			numberOfSteps(zAchse.pwm, 200000000);
+			while(true){
+			tc_stop(TC0, 0);
+			tc_write_rc(TC0, 0, getValueRCforFreq(freq_temp));
+			tc_start(TC0, 0);
+			printf("new Freq: %d\r", freq_temp/2);
+			delay_ms(500);
+			freq_temp = freq_temp+20;
+			}
 			break;
 		
 			case 'z':
 			pio_set_pin_high(zAchse.RESET);
 			pio_set_pin_high(zAchse.CW_CCW);
-			pio_set_pin_low(zAchse.ENBLE);			
+			pio_set_pin_low(zAchse.ENBLE);	
+			encode_init();	
 			printf("Anzahl Schritte: \r");
 			steps = get_input_value();
 			printf("\rFahre %d Schritte.\r", steps);
@@ -133,6 +144,10 @@ int main (void)
 			break;
 		
 			case 'r':
+			pio_set_pin_high(r1.RESET);
+			pio_set_pin_low(r1.CW_CCW);
+			pio_set_pin_low(r1.ENBLE);
+			encode_init();
 			printf("Anzahl Schritte: \r");
 			steps = get_input_value();
 			printf("\rFahre %d Schritte.\r", steps);
@@ -140,9 +155,13 @@ int main (void)
 			break;
 		
 			case 't':
+			pio_set_pin_high(r2.RESET);
+			pio_set_pin_low(r2.CW_CCW);
+			pio_set_pin_low(r2.ENBLE);
+			encode_init();
 			printf("Anzahl Schritte: \r");
 			steps = get_input_value();
-			printf("\rFahre %d Anzahl Schritte.\r", steps);	
+			printf("\rFahre %d Schritte.\r", steps);
 			numberOfSteps(r2.pwm, steps);
 			break;
 		

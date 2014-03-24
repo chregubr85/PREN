@@ -10,16 +10,16 @@
 #include <asf.h>
 #include <stdarg.h>
 #include "Stepper_Driver.h"
+#include "encoder.h"
 
-#define STEPS_RAMP 1000
-
-uint32_t count_z = 0;
 uint32_t count_r1 = 0;
 uint32_t count_r2 = 0;
 uint32_t g_steps_z = 0;
 uint32_t g_steps_r1 = 0;
 uint32_t g_steps_r2 = 0;
 uint32_t captured = 0;
+
+int32_t encode[3];
 
 
 /*Gibt den Wert für für das RC Register zurück, -> wie "weit" soll
@@ -40,6 +40,7 @@ int getValueRCforFreq(int freq){
 			if(freq<40){
 				timerCLK = sysclk_get_peripheral_hz()/128;
 			}
+			
 	return (timerCLK/freq);	
 }
 
@@ -107,23 +108,27 @@ void timer_init( t_PinPwm pin, int freq )
 
 void numberOfSteps(t_PinPwm pwm, int steps){
 	
-	
+	ioport_set_pin_mode(pwm.pin_id, pwm.mux);
+	ioport_disable_pin(pwm.pin_id);
 	
 	/*Interrupt PWM Z-Achse*/
 	if(pwm.Timercounter == TC0 && pwm.channel == 0){
-		g_steps_z = steps;
+		g_steps_z = 2*steps;
+		encode[0] = 3;
 		NVIC_EnableIRQ(TC0_IRQn);
 		tc_start(pwm.Timercounter, pwm.channel);;
 	}
 	/*Interrupt PWM R1*/
 	if(pwm.Timercounter == TC2 && pwm.channel == 1){
-		g_steps_r1 = steps;
+		g_steps_r1 = 2*steps;
+		encode[1] = 0;
 		NVIC_EnableIRQ(TC7_IRQn);
 		tc_start(pwm.Timercounter, pwm.channel);
 	}
 	/*Interrupt PWM R2*/
 	if(pwm.Timercounter == TC2 && pwm.channel == 0){
-		g_steps_r2 = steps;
+		g_steps_r2 = 2*steps;
+		encode[2]=0;
 		NVIC_EnableIRQ(TC6_IRQn);
 		tc_start(pwm.Timercounter, pwm.channel);
 	}
@@ -133,32 +138,41 @@ void numberOfSteps(t_PinPwm pwm, int steps){
 /*ISR PWM2 Z-ACHSE*/
 void TC0_Handler(){
 	TC0->TC_CHANNEL[0].TC_SR;
-	count_z++;
-	if(count_z == g_steps_z){
-		tc_stop(TC0,0);
-		count_z = 0;
+	encode[0] += encode_zAchse_read4();
+		
+	if(Abs(encode[0]) >= g_steps_z){
+		tc_stop(TC0, 0);
+		printf("Value: %d\r", encode[0]);
+		tc_stop(TC0, 1);	
+		pio_configure(PIOB, PIO_INPUT, PIO_PB25, PIO_DEFAULT);
 	}
 }
 
 
 
-/*ISR PWM3*/
+/*ISR PWM3 R1*/
 void TC7_Handler(){
 	TC2->TC_CHANNEL[1].TC_SR;
-	count_r1++;
-	if(count_r1 == g_steps_r1){
-		tc_stop(TC2,1);
-		count_r1 = 0;
+	encode[1] += encode_r1_read4();
+	
+	if(Abs(encode[1]) >= g_steps_r1){
+		tc_stop(TC2, 1);
+		printf("Value: %d\r", encode[1]);
+		tc_stop(TC0, 1);
+		pio_configure(PIOC, PIO_INPUT, PIO_PC28, PIO_DEFAULT);
 	}
 }
 
-/*ISR PWM5*/
+/*ISR PWM5 R2*/
 void TC6_Handler(){
 	TC2->TC_CHANNEL[0].TC_SR;
-	count_r2++;
-	if(count_r2 == g_steps_r2){
-		tc_stop(TC2,0);
-		count_r2 = 0;
+	encode[2] += encode_r2_read4();
+	
+	if(Abs(encode[2]) >= g_steps_r2){
+		tc_stop(TC2, 0);
+		printf("Value: %d\r", encode[2]);
+		tc_stop(TC0, 1);
+		pio_configure(PIOC, PIO_INPUT, PIO_PC26, PIO_DEFAULT);
 	}
 }
 
