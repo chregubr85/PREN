@@ -52,56 +52,56 @@
 void board_init(void)
 {
 	/*Pin Deffinieren für Stepper1 Z-Achse*/
-		pio_configure(PIOA, PIO_INPUT, PIO_PA15, PIO_DEFAULT);		//ALERT
-		pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD0, PIO_DEFAULT);	//M1
-		pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD1, PIO_DEFAULT);	//M2
-		pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD2, PIO_DEFAULT);	//M3
-		pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD3, PIO_DEFAULT);	//ENABLE
-		pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD6, PIO_DEFAULT);	//CW/CCW
-		pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD9, PIO_DEFAULT);	//RESET
-		pio_configure(PIOC, PIO_INPUT, PIO_PC15, PIO_PULLUP);		//Encoder Channel A
-		pio_configure(PIOC, PIO_INPUT, PIO_PC14, PIO_PULLUP);		//Encoder Channel B
+			pio_configure(PIOA, PIO_INPUT, PIO_PA15, PIO_DEFAULT);		//ALERT
+			pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD0, PIO_DEFAULT);	//M1
+			pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD1, PIO_DEFAULT);	//M2
+			pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD2, PIO_DEFAULT);	//M3
+			pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD3, PIO_DEFAULT);	//ENABLE
+			pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD6, PIO_DEFAULT);	//CW/CCW
+			pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD9, PIO_DEFAULT);	//RESET
+			pio_configure(PIOC, PIO_INPUT, PIO_PC15, PIO_PULLUP);		//Encoder Channel A
+			pio_configure(PIOC, PIO_INPUT, PIO_PC14, PIO_PULLUP);		//Encoder Channel B
 		
-		//PWM2 TIOA0
-		pwm2.Timercounter = TC0;
-		pwm2.channel = 0;
-		pwm2.id = ID_TC0;
-		pwm2.pin_id = PIO_PB25_IDX;
-		pwm2.mux = IOPORT_MODE_MUX_B;
+			//PWM2 TIOA0
+			pwm2.Timercounter = TC0;
+			pwm2.channel = 0;
+			pwm2.id = ID_TC0;
+			pwm2.pin_id = PIO_PB25_IDX;
+			pwm2.mux = IOPORT_MODE_MUX_B;
 		
-	/*Struct füllen*/
-	zAchse.ALERT	= PIO_PA15;
-	zAchse.M1		= PIO_PD0_IDX;
-	zAchse.M2		= PIO_PD1_IDX;
-	zAchse.M3		= PIO_PD2_IDX;
-	zAchse.ENBLE	= PIO_PD3_IDX;
-	zAchse.RESET	= PIO_PD9_IDX;
-	zAchse.CW_CCW	= PIO_PD6_IDX;
-	zAchse.pwm		= pwm2;
-	zAchse.ENC_A	= PIO_PC15_IDX;
-	zAchse.ENC_B	= PIO_PC14_IDX;
+			/*Struct füllen*/
+			zAchse.ALERT	= PIO_PA15;
+			zAchse.M1		= PIO_PD0_IDX;
+			zAchse.M2		= PIO_PD1_IDX;
+			zAchse.M3		= PIO_PD2_IDX;
+			zAchse.ENBLE	= PIO_PD3_IDX;
+			zAchse.RESET	= PIO_PD9_IDX;
+			zAchse.CW_CCW	= PIO_PD6_IDX;
+			zAchse.pwm		= pwm2;
+			zAchse.ENC_A	= PIO_PC15_IDX;
+			zAchse.ENC_B	= PIO_PC14_IDX;
 
 	
 	
 
 	
 	/*Pin Deffinieren für Stepper1 R1*/
-		pio_configure(PIOD, PIO_INPUT, PIO_PD10, PIO_DEFAULT);		//ALERT
-		pio_configure(PIOC, PIO_OUTPUT_0, PIO_PC1, PIO_DEFAULT);	//M1
-		pio_configure(PIOC, PIO_OUTPUT_0, PIO_PC2, PIO_DEFAULT);	//M2
-		pio_configure(PIOC, PIO_OUTPUT_0, PIO_PC3, PIO_DEFAULT);	//M3
-		pio_configure(PIOC, PIO_OUTPUT_0, PIO_PC4, PIO_DEFAULT);	//ENABLE
-		pio_configure(PIOC, PIO_OUTPUT_0, PIO_PC5, PIO_DEFAULT);	//CW/CCW
-		pio_configure(PIOC, PIO_OUTPUT_0, PIO_PC6, PIO_DEFAULT);	//RESET
-		pio_configure(PIOC, PIO_INPUT, PIO_PC13, PIO_PULLUP);		//Encoder Channel A
-		pio_configure(PIOC, PIO_INPUT, PIO_PC12, PIO_PULLUP);		//Encoder Channel B		
+	pio_configure(PIOD, PIO_INPUT, PIO_PD10, PIO_DEFAULT);		//ALERT
+	pio_configure(PIOC, PIO_OUTPUT_0, PIO_PC1, PIO_DEFAULT);	//M1
+	pio_configure(PIOC, PIO_OUTPUT_0, PIO_PC2, PIO_DEFAULT);	//M2
+	pio_configure(PIOC, PIO_OUTPUT_0, PIO_PC3, PIO_DEFAULT);	//M3
+	pio_configure(PIOC, PIO_OUTPUT_0, PIO_PC4, PIO_DEFAULT);	//ENABLE
+	pio_configure(PIOC, PIO_OUTPUT_0, PIO_PC5, PIO_DEFAULT);	//CW/CCW
+	pio_configure(PIOC, PIO_OUTPUT_0, PIO_PC6, PIO_DEFAULT);	//RESET
+	pio_configure(PIOC, PIO_INPUT, PIO_PC13, PIO_PULLUP);		//Encoder Channel A
+	pio_configure(PIOC, PIO_INPUT, PIO_PC12, PIO_PULLUP);		//Encoder Channel B		
 		
-		//PWM3 TIOA7
-		pwm3.Timercounter = TC2;
-		pwm3.channel = 1;
-		pwm3.id = ID_TC7;
-		pwm3.pin_id = PIO_PC28_IDX;
-		pwm3.mux = IOPORT_MODE_MUX_B;
+	//PWM3 TIOA7
+	pwm3.Timercounter = TC2;
+	pwm3.channel = 1;
+	pwm3.id = ID_TC7;
+	pwm3.pin_id = PIO_PC28_IDX;
+	pwm3.mux = IOPORT_MODE_MUX_B;
 		
 	/*Struct füllen*/
 	r1.ALERT	= PIO_PD10;
@@ -134,25 +134,18 @@ void board_init(void)
 			pwm5.pin_id = PIO_PC25_IDX;
 			pwm5.mux = IOPORT_MODE_MUX_B;
 			
-		/*Struct füllen*/
-	r2.ALERT	= PIO_PC8;
-	r2.M1		= PIO_PC9_IDX;
-	r2.M2		= PIO_PA19_IDX;
-	r2.M3		= PIO_PA20_IDX;
-	r2.ENBLE	= PIO_PC19_IDX;
-	r2.CW_CCW	= PIO_PC18_IDX;
-	r2.RESET	= PIO_PC17_IDX;
-	r2.pwm		= pwm5;
-	r2.ENC_A	= PIO_PB21_IDX;
-	r2.ENC_B	= PIO_PB14_IDX;
+				/*Struct füllen*/
+			r2.ALERT	= PIO_PC8;
+			r2.M1		= PIO_PC9_IDX;
+			r2.M2		= PIO_PA19_IDX;
+			r2.M3		= PIO_PA20_IDX;
+			r2.ENBLE	= PIO_PC19_IDX;
+			r2.CW_CCW	= PIO_PC18_IDX;
+			r2.RESET	= PIO_PC17_IDX;
+			r2.pwm		= pwm5;
+			r2.ENC_A	= PIO_PB21_IDX;
+			r2.ENC_B	= PIO_PB14_IDX;
 	
-	
-	//PWM11 TIOA8
-	pwm11.Timercounter = TC2;
-	pwm11.channel = 2;
-	pwm11.id = ID_TC8;
-	pwm11.pin_id =PIO_PD7_IDX;
-	pwm11.mux = IOPORT_MODE_MUX_B;
 	
 	/*SERVO*/
 	//Clock Settings
@@ -175,6 +168,26 @@ void board_init(void)
 	pwm_channel_init(PWM, &pwm_pin_7);
 	pwm_channel_enable(PWM, 6);
 	
+	
+	
+	//TC1 mit 15kHz (Zeitinterrupt für Encoder)
+				sysclk_enable_peripheral_clock(ID_TC1);
+				tc_init(TC0, 1,TC_CMR_TCCLKS_TIMER_CLOCK1
+				| TC_CMR_WAVE /* Waveform mode */
+				| TC_CMR_WAVSEL_UP_RC
+				);
+				tc_write_rc(TC0, 1, 2800);
+				/*Interrupt enable*/
+				TC0->TC_CHANNEL[1].TC_IER = TC_IER_CPCS;
+				TC0->TC_CHANNEL[1].TC_IER =~ TC_IDR_CPCS;
+				NVIC_EnableIRQ(TC1_IRQn);
+	
+	
+	//Initiatoren für Initialisierung
+	pio_configure(PIOA, PIO_INPUT, PIO_PA16, PIO_DEFAULT);
+	pio_configure(PIOA, PIO_INPUT, PIO_PA24, PIO_DEFAULT);
+	pio_configure(PIOA, PIO_INPUT, PIO_PA23, PIO_DEFAULT);
+	
 	//Interrupts Enable für Alert  #TODO
 /*	pio_handler_set(PIOA, ID_PIOA, PIO_PA15, PIO_IT_RISE_EDGE, PIOD_ISR);
 	pio_enable_interrupt(PIOA, PIO_PA15);
@@ -188,23 +201,23 @@ void board_init(void)
 	pio_enable_interrupt(PIOD, PIO_PC8);
 	NVIC_EnableIRQ(PIOC_IRQn);
 	*/
-	//TC1 mit 0.0001s Interrupt
-	sysclk_enable_peripheral_clock(ID_TC1);
-	tc_init(TC0, 1,TC_CMR_TCCLKS_TIMER_CLOCK1
-	| TC_CMR_WAVE /* Waveform mode */
-	| TC_CMR_WAVSEL_UP_RC
-	);
-	tc_write_rc(TC0, 1, 2800);
-	/*Interrupt enable*/
-	TC0->TC_CHANNEL[1].TC_IER = TC_IER_CPCS;
-	TC0->TC_CHANNEL[1].TC_IER =~ TC_IDR_CPCS;
-	NVIC_EnableIRQ(TC1_IRQn);
 	
 	
 	/*PWM 7,8,9*/
-	pio_configure_pin(PIO_PC21_IDX, PIO_PERIPH_B | PIO_DEFAULT);
-	pio_configure_pin(PIO_PC22_IDX, PIO_PERIPH_B | PIO_DEFAULT);
-	pio_configure_pin(PIO_PC23_IDX, PIO_PERIPH_B | PIO_DEFAULT);
+				pio_configure_pin(PIO_PC21_IDX, PIO_PERIPH_B | PIO_DEFAULT);
+				pio_configure_pin(PIO_PC22_IDX, PIO_PERIPH_B | PIO_DEFAULT);
+				pio_configure_pin(PIO_PC23_IDX, PIO_PERIPH_B | PIO_DEFAULT);
+	
+	
+	//PWM11 TIOA8
+	pwm11.Timercounter = TC2;
+	pwm11.channel = 2;
+	pwm11.id = ID_TC8;
+	pwm11.pin_id =PIO_PD7_IDX;
+	pwm11.mux = IOPORT_MODE_MUX_B;
+	
+	
+
 	
 	/*ARDUINO DEFINED*/
 	
