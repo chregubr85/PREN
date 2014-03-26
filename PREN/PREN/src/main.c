@@ -99,9 +99,6 @@ int main (void)
 // 
 
 
-	timer_init((zAchse.pwm),1100);
-	timer_init((r1.pwm),1100);
-	timer_init((r2.pwm),1100);
 	
 		puts("--z z Achse \r--r r1 \r--t r2 \r--s Servo klemmen\r--l Servo öffnen\r--m Servo in Mittelstellung\r");
 
@@ -122,29 +119,50 @@ int main (void)
  		{			
 		switch(key){
 			case 'i':
-			pio_set_pin_high(r1.RESET);
-			pio_set_pin_low(r1.CW_CCW);
-			pio_set_pin_low(r1.ENBLE);
-			pio_set_pin_low(r1.M1);
-			pio_set_pin_low(r1.M2);
-			pio_set_pin_high(r1.M3);
-			numberOfSteps(r1, 2000);
+/*
+// 			pio_set_pin_high(r1.RESET);
+// 			pio_set_pin_low(r1.CW_CCW);
+// 			pio_set_pin_low(r1.ENBLE);
+// 			pio_set_pin_low(r1.M1);
+// 			pio_set_pin_low(r1.M2);
+// 			pio_set_pin_high(r1.M3);
+// 			numberOfSteps(r1, 2000);
+// 
+// 			pio_set_pin_high(r2.RESET);
+// 			pio_set_pin_high(r2.CW_CCW);
+// 			pio_set_pin_low(r2.ENBLE);
+// 			pio_set_pin_low(r2.M1);
+// 			pio_set_pin_low(r2.M2);
+// 			pio_set_pin_high(r2.M3);			
+// 			numberOfSteps(r2, 5000);		
+// 			
+// 			pio_set_pin_high(zAchse.RESET);
+// 			pio_set_pin_low(zAchse.CW_CCW);
+// 			pio_set_pin_low(zAchse.ENBLE);
+// 			pio_set_pin_low(zAchse.M1);
+// 			pio_set_pin_low(zAchse.M2);
+// 			pio_set_pin_high(zAchse.M3);			
+// 			numberOfSteps(zAchse, 3000);	
+*/
+timer_init((r2.pwm),500);
+ 			pio_set_pin_high(r2.RESET);
+ 			pio_set_pin_high(r2.CW_CCW);
+ 			pio_set_pin_low(r2.ENBLE);
+ 			pio_set_pin_low(r2.M1);
+ 			pio_set_pin_low(r2.M2);
+ 			pio_set_pin_high(r2.M3);
+			numberOfSteps(r2, 50000000000);
 
-			pio_set_pin_high(r2.RESET);
-			pio_set_pin_high(r2.CW_CCW);
-			pio_set_pin_low(r2.ENBLE);
-			pio_set_pin_low(r2.M1);
-			pio_set_pin_low(r2.M2);
-			pio_set_pin_high(r2.M3);			
-			numberOfSteps(r2, 5000);		
-			
-			pio_set_pin_high(zAchse.RESET);
-			pio_set_pin_low(zAchse.CW_CCW);
-			pio_set_pin_low(zAchse.ENBLE);
-			pio_set_pin_low(zAchse.M1);
-			pio_set_pin_low(zAchse.M2);
-			pio_set_pin_high(zAchse.M3);			
-			numberOfSteps(zAchse, 3000);	
+while(((42000000/tc_read_rc(r2.pwm.Timercounter, r2.pwm.channel))/2) < 3500){
+		
+		tc_write_rc(r2.pwm.Timercounter, r2.pwm.channel, tc_read_rc(r2.pwm.Timercounter, r2.pwm.channel)-100);
+		printf("RC: %d\r", tc_read_rc(r2.pwm.Timercounter, r2.pwm.channel));
+		printf("Freq: %d\r", (42000000/tc_read_rc(r2.pwm.Timercounter, r2.pwm.channel))/2);
+		delay_ms(50);
+		if(((42000000/tc_read_rc(r2.pwm.Timercounter, r2.pwm.channel))/2)> 3500){
+			printf("Steps: %d\r", encode[2]);
+		}
+}
 
 			break;
 		
@@ -172,9 +190,9 @@ int main (void)
 			pio_set_pin_high(r2.RESET);
 			pio_set_pin_low(r2.CW_CCW);
 			pio_set_pin_low(r2.ENBLE);
-			pio_set_pin_high(r2.M1);
-			pio_set_pin_high(r2.M2);
-			pio_set_pin_low(r2.M3);			
+			pio_set_pin_low(r2.M1);
+			pio_set_pin_low(r2.M2);
+			pio_set_pin_high(r2.M3);			
 			printf("Anzahl Schritte: \r");
 			steps = get_input_value();
 			printf("\rFahre %d Schritte.\r", steps);

@@ -32,16 +32,16 @@ int getValueRCforFreq(int freq){
 			{
 				timerCLK = sysclk_get_peripheral_hz()/2;
 			}
-			if(freq>=160 && freq<640){
-				timerCLK = sysclk_get_peripheral_hz()/8;
-			}
-			if(freq>=40 && freq<160){
-				timerCLK = sysclk_get_peripheral_hz()/32;
-			}
-			if(freq<40){
-				timerCLK = sysclk_get_peripheral_hz()/128;
-			}
-			
+// 			if(freq>=160 && freq<640){
+// 				timerCLK = sysclk_get_peripheral_hz()/8;
+// 			}
+// 			if(freq>=40 && freq<160){
+// 				timerCLK = sysclk_get_peripheral_hz()/32;
+// 			}
+// 			if(freq<40){
+// 				timerCLK = sysclk_get_peripheral_hz()/128;
+// 			}
+// 			
 	return (timerCLK/freq);	
 }
 
@@ -177,10 +177,10 @@ void numberOfSteps( t_Stepper axis, int steps )
 void TC0_Handler(){
 	TC0->TC_CHANNEL[0].TC_SR;
 	encode[0] += encode_zAchse_read4();
-		
+	
 	if(Abs(encode[0]) >= g_steps_z){
 		tc_stop(TC0, 0);
-		active[0]=false;	
+		active[0]=false;
 		pio_configure(PIOB, PIO_INPUT, PIO_PB25, PIO_DEFAULT);
 		printf("Encoder z: %d\r", encode[0]);
 	}
@@ -197,7 +197,7 @@ void TC7_Handler(){
 		tc_stop(TC2, 1);
 		active[1] = false;
 		pio_configure(PIOC, PIO_INPUT, PIO_PC28, PIO_DEFAULT);
-		printf("Encoder r1: %d\r", encode[1]);		
+		printf("Encoder r1: %d\r", encode[1]);
 	}
 }
 
@@ -209,8 +209,8 @@ void TC6_Handler(){
 	if(Abs(encode[2]) >= g_steps_r2){
 		tc_stop(TC2, 0);
 		active[2] = false;
-		pio_configure(PIOC, PIO_INPUT, PIO_PC25, PIO_DEFAULT);	
-		printf("Encoder r2: %d\r", encode[2]);	
+		pio_configure(PIOC, PIO_INPUT, PIO_PC25, PIO_DEFAULT);
+		printf("Encoder r2: %d\r", encode[2]);
 	}
 }
 
@@ -224,9 +224,9 @@ void TC8_Handler(){
 void PIOD_ISR(uint32_t id, uint32_t mask)
 {
 	if (ID_PIOD == id && PIO_PD0 == mask){
-	}	
+	}
 	if (ID_PIOD == id && PIO_PD1 == mask){
-	}	
+	}
 	if (ID_PIOD == id && PIO_PD2 == mask){
 	}
 }
