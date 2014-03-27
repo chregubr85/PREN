@@ -47,6 +47,7 @@
 #include "gpio.h"
 #include "ioport.h"
 #include "PWM_TC.h"
+#include "Ablauf.h"
 
 
 void board_init(void)
@@ -185,6 +186,8 @@ void board_init(void)
 	
 	//Initiatoren für Initialisierung
 	pio_configure(PIOA, PIO_INPUT, PIO_PA16, PIO_DEFAULT);
+	pio_handler_set(PIOA, ID_PIOA, PIO_PA16, PIO_IT_RISE_EDGE, ISR_INIT);
+	
 	pio_configure(PIOA, PIO_INPUT, PIO_PA24, PIO_DEFAULT);
 	pio_configure(PIOA, PIO_INPUT, PIO_PA23, PIO_DEFAULT);
 	

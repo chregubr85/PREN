@@ -6,20 +6,17 @@
  */ 
 
 #include "PWM_TC.h"
-#include <sysclk.h>
-#include <asf.h>
-#include <stdarg.h>
 #include "encoder.h"
-#include <pwm.h>
 
-int NORM_FREQ_R1_R2 = 1100;
-int NORM_FREQ_Z		= 500;
+
+int NORM_FREQ_R1_R2 = 300;
+int NORM_FREQ_Z		= 700;
 
 uint32_t g_steps_z = 0;
 uint32_t g_steps_r1 = 0;
 uint32_t g_steps_r2 = 0;
 uint32_t captured = 0;
-
+uint32_t count_z = 0;
 
 
 
@@ -29,19 +26,20 @@ int getValueRCforFreq(int freq){
 		int timerCLK = 0;
 					
 			if(freq>=640)
+			
 			{
 				timerCLK = sysclk_get_peripheral_hz()/2;
 			}
-// 			if(freq>=160 && freq<640){
-// 				timerCLK = sysclk_get_peripheral_hz()/8;
-// 			}
-// 			if(freq>=40 && freq<160){
-// 				timerCLK = sysclk_get_peripheral_hz()/32;
-// 			}
-// 			if(freq<40){
-// 				timerCLK = sysclk_get_peripheral_hz()/128;
-// 			}
-// 			
+			if(freq>=160 && freq<640){
+				timerCLK = sysclk_get_peripheral_hz()/8;
+			}
+			if(freq>=40 && freq<160){
+				timerCLK = sysclk_get_peripheral_hz()/32;
+			}
+			if(freq<40){
+				timerCLK = sysclk_get_peripheral_hz()/128;
+			}
+			
 	return (timerCLK/freq);	
 }
 
@@ -80,35 +78,60 @@ int getFreqeunz(t_PinPwm pin){
 	}
 }
 
-
-int getMulti(t_Stepper pin){
-	bool temp[3];
+/*
+* pin: Stepper Axis
+* CW: Direction, true = Clockwise
+* multistep: 1 = Full-Step, 2 = Half-Step, 4 = 1/4 Step, 8 = 1/8 Step, 16 = 1/16 Step
+*/
+int setStepperMode(t_Stepper pin, bool CW, uint32_t multistep){
+	
 	int multi = 0;
 	
-	temp[0] = pio_get_pin_value(pin.M1);
-	temp[1] = pio_get_pin_value(pin.M2);
-	temp[2] = pio_get_pin_value(pin.M3);
 	
-	if(temp[0] == false && temp[1] == false && temp[2] == true) //Vollschritt
-	{
+	if(CW){
+		pio_set_pin_low(pin.CW_CCW);	
+	}
+	else
+		pio_set_pin_high(pin.CW_CCW);
+		
+	
+	switch(multistep){
+		case 1:
+		pio_set_pin_low(pin.M1);
+		pio_set_pin_low(pin.M2);
+		pio_set_pin_high(pin.M3);
 		return multi = 2;
-	}
-	else if((temp[0] == false && temp[1] == true && temp[2] == false)||(temp[0] == false && temp[1] == true && temp[2] == true)) //Halbschritt
-	{
+		
+		case 2:
+		pio_set_pin_low(pin.M1);
+		pio_set_pin_high(pin.M2);
+		pio_set_pin_low(pin.M3);	
 		return multi = 2*2;
-	}
-	else if (temp[0] == true && temp[1] == false && temp[2] == false) //1/4 Schritte
-	{
+		
+		case 4:
+		pio_set_pin_high(pin.M1);
+		pio_set_pin_low(pin.M2);
+		pio_set_pin_low(pin.M3);
 		return multi = 2*4;
-	}
-	else if(temp[0] == true && temp[1] == false && temp[2] == true) //1/8 Schritte
-	{
+		
+		case 8:
+		pio_set_pin_high(pin.M1);
+		pio_set_pin_low(pin.M2);
+		pio_set_pin_high(pin.M3);
 		return multi = 2*8;
-	}
-	else if(temp[0] == true && temp[1] == true && temp[2] == false) //1/16 Schritte
-	{
+		
+		case 16:
+		pio_set_pin_high(pin.M1);
+		pio_set_pin_high(pin.M2);
+		pio_set_pin_low(pin.M3);
 		return multi = 2*16;
+		
+		default: //Standby
+		pio_set_pin_low(pin.M1);
+		pio_set_pin_low(pin.M2);
+		pio_set_pin_low(pin.M3);
 	}
+
 }
 
 
@@ -135,18 +158,31 @@ void timer_init( t_PinPwm pin, int freq )
 		tc_write_rc(pin.Timercounter, pin.channel, getValueRCforFreq(freq));	
 }
 
-void numberOfSteps( t_Stepper axis, int steps )
+
+
+/*
+* axis: Stepper Axis
+* steps: # of Steps
+* mode: Full-, Half.... Steps
+* CW : True = CW
+*/
+void numberOfSteps( t_Stepper axis, int steps, uint32_t mode, bool CW )
 {
-	int multi = getMulti(axis);
+	int multi = setStepperMode(axis, CW, mode);
 	
 	//ZAchse
 	if(axis.pwm.pin_id == PIO_PB25_IDX){ 
+		encode_init(axis.pwm);
+		pio_set_pin_high(axis.RESET);
+		pio_set_pin_high(axis.ENBLE);		
 		timer_init(axis.pwm, (NORM_FREQ_Z * multi));
 	}
 	//R1 und R2
 	else{
-		timer_init(axis.pwm, (NORM_FREQ_R1_R2*multi));
 		encode_init(axis.pwm);
+		pio_set_pin_high(axis.RESET);
+		pio_set_pin_high(axis.ENBLE);		
+		timer_init(axis.pwm, (NORM_FREQ_R1_R2*multi));	
 	}
 		/*Interrupt PWM Z-Achse*/////axis.pwm.Timercounter == TC0 && axis.pwm.channel == 0
 		if(axis.pwm.pin_id == PIO_PB25_IDX){
@@ -168,6 +204,7 @@ void numberOfSteps( t_Stepper axis, int steps )
 			encode[2]=0;
 			NVIC_EnableIRQ(TC6_IRQn);
 			tc_start(r2.pwm.Timercounter, r2.pwm.channel);
+
 		}
 	
 }
@@ -177,8 +214,11 @@ void numberOfSteps( t_Stepper axis, int steps )
 void TC0_Handler(){
 	TC0->TC_CHANNEL[0].TC_SR;
 	encode[0] += encode_zAchse_read4();
+	count_z++;
 	
-	if(Abs(encode[0]) >= g_steps_z){
+	
+	if(count_z >= g_steps_z){
+		count_z = 0;
 		tc_stop(TC0, 0);
 		active[0]=false;
 		pio_configure(PIOB, PIO_INPUT, PIO_PB25, PIO_DEFAULT);
@@ -205,6 +245,7 @@ void TC7_Handler(){
 void TC6_Handler(){
 	TC2->TC_CHANNEL[0].TC_SR;
 	encode[2] += encode_r2_read4();
+				printf("Steps: %d\r", g_steps_r2);
 	
 	if(Abs(encode[2]) >= g_steps_r2){
 		tc_stop(TC2, 0);
