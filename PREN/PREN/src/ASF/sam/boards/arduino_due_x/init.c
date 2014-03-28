@@ -185,11 +185,26 @@ void board_init(void)
 	
 	
 	//Initiatoren für Initialisierung
+	//R1
 	pio_configure(PIOA, PIO_INPUT, PIO_PA16, PIO_DEFAULT);
 	pio_handler_set(PIOA, ID_PIOA, PIO_PA16, PIO_IT_RISE_EDGE, ISR_INIT);
 	
+	//R2
 	pio_configure(PIOA, PIO_INPUT, PIO_PA24, PIO_DEFAULT);
+	pio_handler_set(PIOA, ID_PIOA, PIO_PA24, PIO_IT_RISE_EDGE, ISR_INIT);
+	
+	//ZAchse
 	pio_configure(PIOA, PIO_INPUT, PIO_PA23, PIO_DEFAULT);
+	pio_handler_set(PIOA, ID_PIOA, PIO_PA23, PIO_IT_RISE_EDGE, ISR_INIT);
+	
+	NVIC_EnableIRQ(PIOA_IRQn); //todo
+	
+	
+	//Zylinder Z-Achse
+	pio_configure(PIOA, PIO_OUTPUT_0, PIO_PA2, PIO_DEFAULT);
+	
+	//Zylinder Stack öffen TODO
+	
 	
 	//Interrupts Enable für Alert  #TODO
 /*	pio_handler_set(PIOA, ID_PIOA, PIO_PA15, PIO_IT_RISE_EDGE, PIOD_ISR);
@@ -210,16 +225,6 @@ void board_init(void)
 				pio_configure_pin(PIO_PC21_IDX, PIO_PERIPH_B | PIO_DEFAULT);
 				pio_configure_pin(PIO_PC22_IDX, PIO_PERIPH_B | PIO_DEFAULT);
 				pio_configure_pin(PIO_PC23_IDX, PIO_PERIPH_B | PIO_DEFAULT);
-	
-	
-	//PWM11 TIOA8
-	pwm11.Timercounter = TC2;
-	pwm11.channel = 2;
-	pwm11.id = ID_TC8;
-	pwm11.pin_id =PIO_PD7_IDX;
-	pwm11.mux = IOPORT_MODE_MUX_B;
-	
-	
 
 	
 	/*ARDUINO DEFINED*/

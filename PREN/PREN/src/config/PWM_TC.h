@@ -10,6 +10,17 @@
 #define PWM_H_
 
 #include <asf.h>
+/* Define Drivermode */
+#define FULLSTEP 1
+#define HALFSTEP 2
+#define VIERTELSTEP 4
+#define ACHTELSTEP 8
+#define SECHZEHNTELSTEP 16
+#define CLOCKWISE true
+#define COUNTERCLOCKWISE false
+
+
+
 
 typedef struct {
 		Tc  *Timercounter;
