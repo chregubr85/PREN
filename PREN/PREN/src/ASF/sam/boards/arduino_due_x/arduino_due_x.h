@@ -233,10 +233,6 @@
 #define PIN_PB_LEFT_CLICK    {PIO_PD8, PIOD, ID_PIOD, PIO_INPUT,\
 	PIO_PULLUP | PIO_DEBOUNCE | PIO_IT_FALL_EDGE}
 
-/** Push button RIGHT CLICK definition.
- *  Attributes = pull-up + debounce + interrupt on falling edge. */
-//#define PIN_PB_RIGHT_CLICK    {PIO_PC28, PIOC, ID_PIOC, PIO_INPUT,\
-	PIO_PULLUP | PIO_DEBOUNCE | PIO_IT_FALL_EDGE}
 
 /*! List of all push button definitions. */
 #define PINS_PUSHBUTTONS    PIN_PB_LEFT_CLICK, PIN_PB_RIGHT_CLICK

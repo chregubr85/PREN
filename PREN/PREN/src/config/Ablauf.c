@@ -62,6 +62,24 @@ bool startPosition(void){
 	
 }
 
+/* Spielfeld abfahren für Kinect */
+bool gotoPositonKinect(void){
+	
+	//Enable Interrupts
+	pio_enable_interrupt(PIOA, INIT_Z);	//Z
+	
+
+	numberOfSteps(zAchse, KINECTPOSITION, FULLSTEP, COUNTERCLOCKWISE);
+	
+	while(active[0])
+	{
+		delay_ms(50);
+	}
+	
+		return true;
+	
+}
+
 void getCube(uint32_t steps_r1, uint32_t steps_r2, uint32_t steps_z){
 	
 	if(steps_r1 < encode[1])

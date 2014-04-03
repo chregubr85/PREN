@@ -290,8 +290,9 @@ void uart_send(uint32_t data)
 		uart_putc(UART_EMPTY);
 		uart_putc(UART_EMPTY);
 		uart_putc(UART_EMPTY);
+
 	}
-	if(data == UART_INIT_OK)
+	else if(data == UART_INIT_OK)
 	{
 		uart_putc(UART_INIT);
 		uart_putc(UART_EMPTY);
@@ -302,10 +303,13 @@ void uart_send(uint32_t data)
 	else
 	{
 		uart_putc(UART_OK);
+		uart_putc((data>>24)&0xFF);
+		uart_putc((data>>16)& 0xFF);
+		uart_putc((data>>8&0xFF));
+		uart_putc(data & 0xFF);
+		/*uart_putc(UART_EMPTY);
 		uart_putc(UART_EMPTY);
 		uart_putc(UART_EMPTY);
-		uart_putc(UART_EMPTY);
-		uart_putc(UART_EMPTY);
+		uart_putc(UART_EMPTY);		*/
 	}
-	
 }

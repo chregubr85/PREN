@@ -36,6 +36,7 @@ unsigned int key = 0;
 uint32_t cubePositions [3][6] ;
 bool startPositionOk = false;
 uint32_t init_ok = 0;
+bool uartOK = false;
 
 
 
@@ -75,7 +76,7 @@ int main (void)
 	sysclk_init();
 	
 	
-	puts("--z z Achse \r--r r1 \r--t r2 \r--s Servo klemmen\r--l Servo öffnen\r--m Servo in Mittelstellung\r");
+	//puts("--z z Achse \r--r r1 \r--t r2 \r--s Servo klemmen\r--l Servo öffnen\r--m Servo in Mittelstellung\r");
 
 
 	while(true){
@@ -85,7 +86,7 @@ int main (void)
 		tc_stop(TC0, 1);
 	}
 	
-
+/*
 	key = uart_getc();
 	 	if (key & UART_NO_DATA )
 	        {
@@ -95,13 +96,12 @@ int main (void)
  		{			
 		switch(key){
 			case 'i':
-
-			numberOfSteps(r1, 2000, FULLSTEP, CLOCKWISE);
-			
-			numberOfSteps(r2, 5000, FULLSTEP, CLOCKWISE);		
-			
-			numberOfSteps(zAchse, 3000, FULLSTEP, CLOCKWISE);	
-
+	
+			while(true){
+							numberOfSteps(zAchse, 200, FULLSTEP, CLOCKWISE);
+							delay_ms(750);
+							
+			}
 		
 
 
@@ -147,7 +147,7 @@ int main (void)
 
 
 
-
+*/
 
 
 
@@ -164,12 +164,14 @@ int main (void)
 		switch(key){
 
 			case 0x00: //Hello
-				uart_send((uint32_t) UART_EMPTY);
+				uart_get_data();
+				uart_send(UART_OK_32);
 			break;
 			
 			case 0x01: // Initialisieren  
-
-				init_ok = initialPosition();  
+				uart_get_data();
+				//init_ok = initialPosition(); 
+				init_ok = UART_INIT_OK; 
 				uart_send(init_ok);
 			break;
 			
@@ -284,11 +286,22 @@ int main (void)
 				//Würfel 6
 				getCube(cubePositions[0][0], cubePositions[1][0], cubePositions[2][0]);				
 				
+				startPositionOk = placeTower();
+				
 				if(startPositionOk){
 					uart_send(UART_INIT_OK);
 				}
 				else
 					uart_send(UART_ERROR);	
+			break;
+			
+			case 0x1e://Spielfeld abfahren Kinect
+				uartOK = gotoPositonKinect();
+				if(uartOK){
+					uart_send(UART_OK_32);
+				}
+				else
+					uart_send(UART_ERROR);
 			break;
 			
 			case 0x1f: //Turm stellen erzwingen 
