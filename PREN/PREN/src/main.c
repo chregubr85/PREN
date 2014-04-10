@@ -152,8 +152,6 @@ int main (void)
 
 
 
-
-
 	key = uart_getc();	
 	if (key & UART_NO_DATA )
         {
@@ -170,8 +168,8 @@ int main (void)
 			
 			case 0x01: // Initialisieren  
 				uart_get_data();
-				//init_ok = initialPosition(); 
-				init_ok = UART_INIT_OK; 
+			//	init_ok = initialPosition(); 
+				init_ok = UART_INIT_OK;
 				uart_send(init_ok);
 			break;
 			
@@ -305,7 +303,10 @@ int main (void)
 			break;
 			
 			case 0x1f: //Turm stellen erzwingen 
-			// TODO Turm stellen  
+				while(active[0] == true || active[1] == true || active[2] == true){
+					delay_ms(500);
+				}
+				placeTower();
 			break;			
 
 			default:

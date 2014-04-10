@@ -307,9 +307,5 @@ void uart_send(uint32_t data)
 		uart_putc((data>>16)& 0xFF);
 		uart_putc((data>>8&0xFF));
 		uart_putc(data & 0xFF);
-		/*uart_putc(UART_EMPTY);
-		uart_putc(UART_EMPTY);
-		uart_putc(UART_EMPTY);
-		uart_putc(UART_EMPTY);		*/
 	}
 }

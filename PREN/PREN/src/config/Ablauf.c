@@ -18,11 +18,16 @@ uint32_t initialPosition(void){
 	//Enable Interrupts
 	pio_enable_interrupt(PIOA, INIT_R1);	//R1
 	pio_enable_interrupt(PIOA, INIT_R2);	//R2
-	pio_enable_interrupt(PIOA, INIT_Z);	//Z
+	pio_enable_interrupt(PIOA, INIT_Z);		//Z
 	
 	numberOfSteps(r1, MAXSTEPS, FULLSTEP, COUNTERCLOCKWISE);				
-	numberOfSteps(r2, MAXSTEPS, FULLSTEP, COUNTERCLOCKWISE);				
-	numberOfSteps(zAchse, MAXSTEPS, FULLSTEP, COUNTERCLOCKWISE);
+	numberOfSteps(r2, MAXSTEPS, FULLSTEP, COUNTERCLOCKWISE);
+	if(encode[0] > 0){				
+		numberOfSteps(zAchse, MAXSTEPS, FULLSTEP, COUNTERCLOCKWISE);
+	}
+	else{
+		numberOfSteps(zAchse, MAXSTEPS, FULLSTEP, CLOCKWISE);
+	}
 	
 	while(active[0] ||  active[1] || active[2])
 	{
@@ -71,10 +76,10 @@ bool gotoPositonKinect(void){
 
 	numberOfSteps(zAchse, KINECTPOSITION, FULLSTEP, CLOCKWISE);
 	
-	while(active[0])
+	/*while(active[0])
 	{
 		delay_ms(50);
-	}
+	}*/
 	
 		return true;
 	
@@ -156,11 +161,19 @@ bool placeTower(void){
 		delay_ms(500);		
 	
 		//Stack öffnen
-		//TODO
+		pio_set_pin_high(ZYLINDER_STACK);
+		delay_ms(500);
+		
 			
 		//Kran heben
 		pio_set_pin_low(ZYLINDER_ZACHSE);
 		delay_ms(500);	
+		numberOfSteps(r1, TOWER_PLACED, FULLSTEP, COUNTERCLOCKWISE);
+		numberOfSteps(r2, TOWER_PLACED, FULLSTEP, COUNTERCLOCKWISE);
+		
+		while(active[1] || active[2]){
+			delay_ms(500);
+		}	
 		
 		return startPosition();
 }

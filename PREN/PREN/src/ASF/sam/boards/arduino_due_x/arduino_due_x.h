@@ -263,22 +263,6 @@
 #define PIN_PUSHBUTTON_1_TYPE PIO_INPUT
 #define PIN_PUSHBUTTON_1_ATTR (PIO_PULLUP | PIO_DEBOUNCE | PIO_IT_RISE_EDGE)
 
-/** Push button #1 definition.
- *  Attributes = pull-up + debounce + interrupt on falling edge. */
-//#define PUSHBUTTON_2_NAME    "External_PB2_on_PWM3_connector_output"
-//#define GPIO_PUSH_BUTTON_2           (PIO_PC28_IDX)
-//#define GPIO_PUSH_BUTTON_2_FLAGS\
-	(PIO_INPUT | PIO_PULLUP)
-
-//#define PIN_PUSHBUTTON_2    {PIO_PC28, PIOC, ID_PIOC, PIO_INPUT,\
-	PIO_PULLUP | PIO_DEBOUNCE | PIO_IT_FALL_EDGE}
-//#define PIN_PUSHBUTTON_2_MASK PIO_PC28
-//#define PIN_PUSHBUTTON_2_PIO PIOC
-//#define PIN_PUSHBUTTON_2_ID ID_PIOC
-//#define PIN_PUSHBUTTON_2_TYPE PIO_INPUT
-//#define PIN_PUSHBUTTON_2_ATTR (PIO_PULLUP | PIO_DEBOUNCE | PIO_IT_FALL_EDGE)
-
-
 #define PIN_TC0_TIOA1           (PIO_PA2_IDX)
 #define PIN_TC0_TIOA1_MUX       (IOPORT_MODE_MUX_A)
 #define PIN_TC0_TIOA1_FLAGS     (PIO_PERIPH_A | PIO_DEFAULT)

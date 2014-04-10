@@ -53,7 +53,10 @@ t_Stepper r2;
 
 pwm_channel_t pwm_pin_7; //Servo
 
-int32_t encode[3];	// Array mit den Encoderwerten für Z-Achse, R1 und R2
+/* Array mit den Encoderwerten für Z-Achse, R1 und R2
+/* Encode = 0 in Initialposition */
+int32_t encode[3];	
+
 bool active[3];		//Aktivitätsüberwachung der drei Achsen (false = nicht aktiv)
 
 

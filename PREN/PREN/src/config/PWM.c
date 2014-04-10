@@ -217,11 +217,11 @@ void TC0_Handler(){
 	count_z++;
 	
 	
-	if(encode [0] >= g_steps_z){
+	if(encode [0] == g_steps_z){
 		tc_stop(TC0, 0);
 		active[0]=false;
 		pio_configure(PIOB, PIO_INPUT, PIO_PB25, PIO_DEFAULT);
-		printf("Encoder z: %d\r", encode[0]);
+	//	printf("Encoder z: %d\r", encode[0]);
 	}
 }
 
@@ -232,11 +232,11 @@ void TC7_Handler(){
 	TC2->TC_CHANNEL[1].TC_SR;
 	encode[1] += encode_r1_read4();
 	
-	if(Abs(encode[1]) >= g_steps_r1){
+	if(Abs(encode[1]) == g_steps_r1){
 		tc_stop(TC2, 1);
 		active[1] = false;
 		pio_configure(PIOC, PIO_INPUT, PIO_PC28, PIO_DEFAULT);
-		printf("Encoder r1: %d\r", encode[1]);
+	//	printf("Encoder r1: %d\r", encode[1]);
 	}
 }
 
@@ -246,11 +246,11 @@ void TC6_Handler(){
 	encode[2] += encode_r2_read4();
 				printf("Steps: %d\r", g_steps_r2);
 	
-	if(Abs(encode[2]) >= g_steps_r2){
+	if(Abs(encode[2]) == g_steps_r2){
 		tc_stop(TC2, 0);
 		active[2] = false;
 		pio_configure(PIOC, PIO_INPUT, PIO_PC25, PIO_DEFAULT);
-		printf("Encoder r2: %d\r", encode[2]);
+	//	printf("Encoder r2: %d\r", encode[2]);
 	}
 }
 

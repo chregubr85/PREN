@@ -14,6 +14,7 @@
 #define INIT_R2 PIO_PA24_IDX
 #define INIT_Z	PIO_PA23_IDX
 #define ZYLINDER_ZACHSE PIO_PA2_IDX
+#define ZYLINDER_STACK PIO_PA6_IDX
 
 /* Define Maximalvalues */
 #define MAXSTEPS		200000000
@@ -27,6 +28,7 @@
 #define PLACE_TOWER_R1	500 //TODO
 #define PLACE_TOWER_R2	500 //TODO
 #define PLACE_TOWER_Z	500 //TODO
+#define TOWER_PLACED	500 //TODO r etwas zurück
 
 
 uint32_t initialPosition(void);

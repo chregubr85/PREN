@@ -191,14 +191,15 @@ void board_init(void)
 	pio_configure(PIOA, PIO_INPUT, PIO_PA23, PIO_DEFAULT);
 	pio_handler_set(PIOA, ID_PIOA, PIO_PA23, PIO_IT_RISE_EDGE, ISR_INIT);
 	
-	NVIC_EnableIRQ(PIOA_IRQn); //todo
+	NVIC_EnableIRQ(PIOA_IRQn);
 	
 	
 	//Zylinder Z-Achse
 	pio_configure(PIOA, PIO_OUTPUT_0, PIO_PA2, PIO_DEFAULT);
 	
-	//Zylinder Stack öffen TODO
 	
+	//Zylinder Stack öffen
+	pio_configure(PIOA, PIO_OUTPUT_0, PIO_PA6, PIO_DEFAULT);
 
 	
 	/*PWM 7,8,9*/
