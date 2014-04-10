@@ -23,6 +23,7 @@
 #define UART_NO_DATA          0x0100              /* no receive data available   */
 #define UART_ERROR			  0xffffffff		  /* Allgemeiner Fehler			 */
 #define UART_INIT_OK		  0xffff0000		  /* Initialisiert  			 */
+#define UART_OK_32			  0xeeeeeeee		  /* OK				 			 */
 
 /*
 ** usual Values to send

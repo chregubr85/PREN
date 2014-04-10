@@ -34,10 +34,8 @@ typedef struct {
 t_PinPwm pwm2;	
 t_PinPwm pwm3;
 t_PinPwm pwm5;
-t_PinPwm pwm11;
 
 typedef struct {
-	uint32_t ALERT;
 	uint32_t RESET;
 	uint32_t M1;
 	uint32_t M2;

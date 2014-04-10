@@ -217,8 +217,7 @@ void TC0_Handler(){
 	count_z++;
 	
 	
-	if(count_z >= g_steps_z){
-		count_z = 0;
+	if(encode [0] >= g_steps_z){
 		tc_stop(TC0, 0);
 		active[0]=false;
 		pio_configure(PIOB, PIO_INPUT, PIO_PB25, PIO_DEFAULT);

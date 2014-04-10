@@ -69,7 +69,7 @@ bool gotoPositonKinect(void){
 	pio_enable_interrupt(PIOA, INIT_Z);	//Z
 	
 
-	numberOfSteps(zAchse, KINECTPOSITION, FULLSTEP, COUNTERCLOCKWISE);
+	numberOfSteps(zAchse, KINECTPOSITION, FULLSTEP, CLOCKWISE);
 	
 	while(active[0])
 	{

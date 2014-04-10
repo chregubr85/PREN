@@ -53,7 +53,6 @@
 void board_init(void)
 {
 	/*Pin Deffinieren für Stepper1 Z-Achse*/
-			pio_configure(PIOA, PIO_INPUT, PIO_PA15, PIO_DEFAULT);		//ALERT
 			pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD0, PIO_DEFAULT);	//M1
 			pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD1, PIO_DEFAULT);	//M2
 			pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD2, PIO_DEFAULT);	//M3
@@ -71,7 +70,6 @@ void board_init(void)
 			pwm2.mux = IOPORT_MODE_MUX_B;
 		
 			/*Struct füllen*/
-			zAchse.ALERT	= PIO_PA15;
 			zAchse.M1		= PIO_PD0_IDX;
 			zAchse.M2		= PIO_PD1_IDX;
 			zAchse.M3		= PIO_PD2_IDX;
@@ -87,7 +85,6 @@ void board_init(void)
 
 	
 	/*Pin Deffinieren für Stepper1 R1*/
-	pio_configure(PIOD, PIO_INPUT, PIO_PD10, PIO_DEFAULT);		//ALERT
 	pio_configure(PIOC, PIO_OUTPUT_0, PIO_PC1, PIO_DEFAULT);	//M1
 	pio_configure(PIOC, PIO_OUTPUT_0, PIO_PC2, PIO_DEFAULT);	//M2
 	pio_configure(PIOC, PIO_OUTPUT_0, PIO_PC3, PIO_DEFAULT);	//M3
@@ -105,7 +102,6 @@ void board_init(void)
 	pwm3.mux = IOPORT_MODE_MUX_B;
 		
 	/*Struct füllen*/
-	r1.ALERT	= PIO_PD10;
 	r1.M1		= PIO_PC1_IDX;
 	r1.M2		= PIO_PC2_IDX;
 	r1.M3		= PIO_PC3_IDX;
@@ -118,7 +114,6 @@ void board_init(void)
 	
 	
 	/*Pin Deffinieren für Stepper1 R2*/
-			pio_configure(PIOC, PIO_INPUT, PIO_PC8, PIO_DEFAULT);		//ALERT
 			pio_configure(PIOC, PIO_OUTPUT_0, PIO_PC9, PIO_DEFAULT);	//M1
 			pio_configure(PIOA, PIO_OUTPUT_0, PIO_PA19, PIO_DEFAULT);	//M2
 			pio_configure(PIOA, PIO_OUTPUT_0, PIO_PA20, PIO_DEFAULT);	//M3
@@ -136,7 +131,6 @@ void board_init(void)
 			pwm5.mux = IOPORT_MODE_MUX_B;
 			
 				/*Struct füllen*/
-			r2.ALERT	= PIO_PC8;
 			r2.M1		= PIO_PC9_IDX;
 			r2.M2		= PIO_PA19_IDX;
 			r2.M3		= PIO_PA20_IDX;
@@ -205,21 +199,7 @@ void board_init(void)
 	
 	//Zylinder Stack öffen TODO
 	
-	
-	//Interrupts Enable für Alert  #TODO
-/*	pio_handler_set(PIOA, ID_PIOA, PIO_PA15, PIO_IT_RISE_EDGE, PIOD_ISR);
-	pio_enable_interrupt(PIOA, PIO_PA15);
-	NVIC_EnableIRQ(PIOA_IRQn);
-	
-	pio_handler_set(PIOD, ID_PIOD, PIO_PD10, PIO_IT_RISE_EDGE, PIOD_ISR);
-	pio_enable_interrupt(PIOD, PIO_PD10);
-	NVIC_EnableIRQ(PIOD_IRQn);
-	
-	pio_handler_set(PIOC, ID_PIOC, PIO_PC8, PIO_IT_RISE_EDGE, PIOD_ISR);
-	pio_enable_interrupt(PIOD, PIO_PC8);
-	NVIC_EnableIRQ(PIOC_IRQn);
-	*/
-	
+
 	
 	/*PWM 7,8,9*/
 				pio_configure_pin(PIO_PC21_IDX, PIO_PERIPH_B | PIO_DEFAULT);
