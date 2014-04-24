@@ -76,7 +76,7 @@ int main (void)
 	sysclk_init();
 	
 	
-	//puts("--z z Achse \r--r r1 \r--t r2 \r--s Servo klemmen\r--l Servo öffnen\r--m Servo in Mittelstellung\r");
+	puts("--z z Achse \r--r r1 \r--t r2 \r--s Servo klemmen\r--l Servo öffnen\r--m Servo in Mittelstellung\r");
 
 
 	while(true){
@@ -86,7 +86,7 @@ int main (void)
 		tc_stop(TC0, 1);
 	}
 	
-/*
+
 	key = uart_getc();
 	 	if (key & UART_NO_DATA )
 	        {
@@ -96,15 +96,6 @@ int main (void)
  		{			
 		switch(key){
 			case 'i':
-	
-			while(true){
-							numberOfSteps(zAchse, 200, FULLSTEP, CLOCKWISE);
-							delay_ms(750);
-							
-			}
-		
-
-
 			break;
 		
 			case 'z':	
@@ -147,10 +138,10 @@ int main (void)
 
 
 
-*/
 
 
 
+/*
 
 	key = uart_getc();	
 	if (key & UART_NO_DATA )
@@ -313,6 +304,6 @@ int main (void)
 				printf("ERROR\r");
 			}
 
-		}
+		}*/
 	}
 }
