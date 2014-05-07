@@ -9,7 +9,7 @@
 #include "encoder.h"
 
 
-int NORM_FREQ_R1_R2 = 300;
+int NORM_FREQ_R1_R2 = 400;
 int NORM_FREQ_Z		= 700;
 
 uint32_t g_steps_z = 0;
@@ -17,6 +17,7 @@ uint32_t g_steps_r1 = 0;
 uint32_t g_steps_r2 = 0;
 uint32_t captured = 0;
 uint32_t count_z = 0;
+uint32_t count_r2 = 0;
 
 
 
@@ -213,15 +214,16 @@ void numberOfSteps( t_Stepper axis, int steps, uint32_t mode, bool CW )
 /*ISR PWM2 Z-ACHSE*/
 void TC0_Handler(){
 	TC0->TC_CHANNEL[0].TC_SR;
-	encode[0] += encode_zAchse_read4();
+	//encode[0] += encode_zAchse_read4();
 	count_z++;
 	
-	
-	if(encode [0] == g_steps_z){
-		tc_stop(TC0, 0);
+	//if(encode [0] == g_steps_z){
+	if(count_z == 1600){
+		//tc_stop(TC0, 0);
+		pio_set_pin_low(zAchse.RESET);
 		active[0]=false;
-		pio_configure(PIOB, PIO_INPUT, PIO_PB25, PIO_DEFAULT);
-	//	printf("Encoder z: %d\r", encode[0]);
+		//pio_configure(PIOB, PIO_INPUT, PIO_PB25, PIO_DEFAULT);
+		printf("Encoder z: %d\r", encode[0]);
 	}
 }
 
@@ -243,13 +245,15 @@ void TC7_Handler(){
 /*ISR PWM5 R2*/
 void TC6_Handler(){
 	TC2->TC_CHANNEL[0].TC_SR;
-	encode[2] += encode_r2_read4();
-				printf("Steps: %d\r", g_steps_r2);
+	/*encode[2] += encode_r2_read4();
+				printf("Steps: %d\r", g_steps_r2);*/
+	count_r2++;
 	
-	if(Abs(encode[2]) == g_steps_r2){
+	if(count_r2== g_steps_r2){
 		tc_stop(TC2, 0);
 		active[2] = false;
 		pio_configure(PIOC, PIO_INPUT, PIO_PC25, PIO_DEFAULT);
+		//pio_set_pin_low(r2.RESET);
 	//	printf("Encoder r2: %d\r", encode[2]);
 	}
 }

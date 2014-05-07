@@ -58,6 +58,11 @@ void board_init(void)
 			pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD2, PIO_DEFAULT);	//M3
 			pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD3, PIO_DEFAULT);	//ENABLE
 			pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD6, PIO_DEFAULT);	//CW/CCW
+			
+			
+			pio_configure(PIOB, PIO_INPUT, PIO_PB25, PIO_DEFAULT);
+			
+			
 			pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD9, PIO_DEFAULT);	//RESET
 			pio_configure(PIOC, PIO_INPUT, PIO_PC15, PIO_PULLUP);		//Encoder Channel A
 			pio_configure(PIOC, PIO_INPUT, PIO_PC14, PIO_PULLUP);		//Encoder Channel B
@@ -200,6 +205,10 @@ void board_init(void)
 	
 	//Zylinder Stack öffen
 	pio_configure(PIOA, PIO_OUTPUT_0, PIO_PA6, PIO_DEFAULT);
+	
+	//Reserver Ventiltreiber
+	pio_configure(PIOA, PIO_OUTPUT_0, PIO_PA4, PIO_DEFAULT);
+	pio_set_pin_low(PIO_PA4_IDX);
 
 	
 	/*PWM 7,8,9*/

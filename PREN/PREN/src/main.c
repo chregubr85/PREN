@@ -76,7 +76,7 @@ int main (void)
 	sysclk_init();
 	
 	
-	puts("--z z Achse \r--r r1 \r--t r2 \r--s Servo klemmen\r--l Servo öffnen\r--m Servo in Mittelstellung\r");
+	puts("--a z Achse Fullstep, CLK\r--s Z Reset High\r--d Z Reset low\r--f Z Enable high\r--g Z Enable low\r");// Servo klemmen\r--l Servo öffnen\r--m Servo in Mittelstellung\r");
 
 
 	while(true){
@@ -96,13 +96,49 @@ int main (void)
  		{			
 		switch(key){
 			case 'i':
+			pio_set_pin_low(ZYLINDER_ZACHSE);
+			break;
+			
+			case 'o':
+			pio_set_pin_high(ZYLINDER_ZACHSE);
 			break;
 		
-			case 'z':	
-			printf("Anzahl Schritte: \r");
+			case 'a':	
+			pio_set_pin_low(r1.M1);
+			pio_set_pin_low(r1.M2);
+			pio_set_pin_high(r1.M3);
+			
+			timer_init(r1.pwm, 800);	
+			tc_start(r1.pwm.Timercounter, r1.pwm.channel);
+			
+			printf("M1 low, M2 low, M3 high, CLK rennt\r");
+			
+/*			printf("Anzahl Schritte: \r");
 			steps = get_input_value();
 			printf("\rFahre %d Schritte.\r", steps);
-			numberOfSteps(zAchse, 200, FULLSTEP, CLOCKWISE);
+			numberOfSteps(zAchse, steps, FULLSTEP, CLOCKWISE);*/
+			break;
+			
+			case 's':
+			pio_set_pin_high(r1.RESET);
+			NVIC_EnableIRQ(TC2_IRQn);
+			printf("Reset high\r");
+			break;
+			
+			case 'd':
+			pio_set_pin_low(r1.RESET);
+			NVIC_DisableIRQ(TC2_IRQn);
+			printf("Reset low\r");
+			break;			
+			
+			case 'f':
+			pio_set_pin_high(r1.ENBLE);
+			printf("Enable high\r");
+			break;
+			
+			case 'g':
+			pio_set_pin_low(r1.ENBLE);
+			printf("Enable low\r");
 			break;
 		
 			case 'r':
@@ -119,9 +155,9 @@ int main (void)
 			numberOfSteps(r2, steps, FULLSTEP, CLOCKWISE);
 			break;
 		
-			case 's':
+			/*case 's':
 			pwm_channel_update_duty(PWM, &pwm_pin_7, 21);
-			break;
+			break;*/
 		
 			case 'l':
 			pwm_channel_update_duty(PWM, &pwm_pin_7, 42);
