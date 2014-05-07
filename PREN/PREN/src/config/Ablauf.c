@@ -20,13 +20,13 @@ uint32_t initialPosition(void){
 	pio_enable_interrupt(PIOA, INIT_R2);	//R2
 	pio_enable_interrupt(PIOA, INIT_Z);		//Z
 	
-	numberOfSteps(r1, MAXSTEPS, FULLSTEP, COUNTERCLOCKWISE);				
-	numberOfSteps(r2, MAXSTEPS, FULLSTEP, COUNTERCLOCKWISE);
+	numberOfSteps(r1, MAXSTEPS, COUNTERCLOCKWISE);				
+	numberOfSteps(r2, MAXSTEPS, COUNTERCLOCKWISE);
 	if(encode[0] > 0){				
-		numberOfSteps(zAchse, MAXSTEPS, FULLSTEP, COUNTERCLOCKWISE);
+		numberOfSteps(zAchse, MAXSTEPS, COUNTERCLOCKWISE);
 	}
 	else{
-		numberOfSteps(zAchse, MAXSTEPS, FULLSTEP, CLOCKWISE);
+		numberOfSteps(zAchse, MAXSTEPS, CLOCKWISE);
 	}
 	
 	while(active[0] ||  active[1] || active[2])
@@ -48,15 +48,15 @@ bool startPosition(void){
 	if(!pio_get_pin_value(INIT_R1))
 	{
 		pio_enable_interrupt(PIOA, INIT_R1);
-		numberOfSteps(r1, MAXSTEPS, FULLSTEP, COUNTERCLOCKWISE);	
+		numberOfSteps(r1, MAXSTEPS, COUNTERCLOCKWISE);	
 	}
 	if(!pio_get_pin_value(INIT_R2))
 	{
 		pio_enable_interrupt(PIOA, INIT_R2);
-		numberOfSteps(r2, MAXSTEPS, FULLSTEP, COUNTERCLOCKWISE);
+		numberOfSteps(r2, MAXSTEPS, COUNTERCLOCKWISE);
 	}	
 	
-	numberOfSteps(zAchse, STARTPOSITION_Z, FULLSTEP, CLOCKWISE);	
+	numberOfSteps(zAchse, STARTPOSITION_Z, CLOCKWISE);	
 	
 	while(active[0] ||  active[1] || active[2])
 	{
@@ -74,7 +74,7 @@ bool gotoPositonKinect(void){
 	pio_enable_interrupt(PIOA, INIT_Z);	//Z
 	
 
-	numberOfSteps(zAchse, KINECTPOSITION, FULLSTEP, CLOCKWISE);
+	numberOfSteps(zAchse, KINECTPOSITION, CLOCKWISE);
 	
 	/*while(active[0])
 	{
@@ -89,24 +89,24 @@ void getCube(uint32_t steps_r1, uint32_t steps_r2, uint32_t steps_z){
 	
 	if(steps_r1 < encode[1])
 	{
-		numberOfSteps(r1, steps_r1, FULLSTEP, COUNTERCLOCKWISE);
+		numberOfSteps(r1, steps_r1, COUNTERCLOCKWISE);
 	}
 	else
-	numberOfSteps(r1, steps_r1, FULLSTEP, CLOCKWISE);
+	numberOfSteps(r1, steps_r1, CLOCKWISE);
 	
 	if(steps_r2 < encode[2])
 	{
-		numberOfSteps(r2, steps_r2, FULLSTEP, COUNTERCLOCKWISE);
+		numberOfSteps(r2, steps_r2, COUNTERCLOCKWISE);
 	}
 	else
-	numberOfSteps(r2, steps_r2, FULLSTEP, CLOCKWISE);	
+	numberOfSteps(r2, steps_r2, CLOCKWISE);	
 	
 	if(steps_z < encode[0])
 	{
-		numberOfSteps(zAchse, steps_z, FULLSTEP, COUNTERCLOCKWISE);
+		numberOfSteps(zAchse, steps_z, COUNTERCLOCKWISE);
 	}
 	else
-	numberOfSteps(zAchse, steps_z, FULLSTEP, CLOCKWISE);
+	numberOfSteps(zAchse, steps_z, CLOCKWISE);
 	
 	while(active[0] || active[1] || active[2])
 	{
@@ -132,24 +132,24 @@ void getCube(uint32_t steps_r1, uint32_t steps_r2, uint32_t steps_z){
 bool placeTower(void){
 		if(PLACE_TOWER_R1 < encode[1])
 		{
-			numberOfSteps(r1, PLACE_TOWER_R1, FULLSTEP, COUNTERCLOCKWISE);
+			numberOfSteps(r1, PLACE_TOWER_R1, COUNTERCLOCKWISE);
 		}
 		else
-		numberOfSteps(r1, PLACE_TOWER_R1, FULLSTEP, CLOCKWISE);
+		numberOfSteps(r1, PLACE_TOWER_R1, CLOCKWISE);
 		
 		if(PLACE_TOWER_R2 < encode[2])
 		{
-			numberOfSteps(r2, PLACE_TOWER_R2, FULLSTEP, COUNTERCLOCKWISE);
+			numberOfSteps(r2, PLACE_TOWER_R2, COUNTERCLOCKWISE);
 		}
 		else
-		numberOfSteps(r2, PLACE_TOWER_R2, FULLSTEP, CLOCKWISE);
+		numberOfSteps(r2, PLACE_TOWER_R2, CLOCKWISE);
 		
 		if(PLACE_TOWER_Z < encode[0])
 		{
-			numberOfSteps(zAchse, PLACE_TOWER_Z, FULLSTEP, COUNTERCLOCKWISE);
+			numberOfSteps(zAchse, PLACE_TOWER_Z, COUNTERCLOCKWISE);
 		}
 		else
-		numberOfSteps(zAchse, PLACE_TOWER_Z, FULLSTEP, CLOCKWISE);
+		numberOfSteps(zAchse, PLACE_TOWER_Z, CLOCKWISE);
 		
 		while(active[0] || active[1] || active[2])
 		{
@@ -168,8 +168,8 @@ bool placeTower(void){
 		//Kran heben
 		pio_set_pin_low(ZYLINDER_ZACHSE);
 		delay_ms(500);	
-		numberOfSteps(r1, TOWER_PLACED, FULLSTEP, COUNTERCLOCKWISE);
-		numberOfSteps(r2, TOWER_PLACED, FULLSTEP, COUNTERCLOCKWISE);
+		numberOfSteps(r1, TOWER_PLACED, COUNTERCLOCKWISE);
+		numberOfSteps(r2, TOWER_PLACED, COUNTERCLOCKWISE);
 		
 		while(active[1] || active[2]){
 			delay_ms(500);

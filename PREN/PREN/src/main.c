@@ -76,12 +76,12 @@ int main (void)
 	sysclk_init();
 	
 	
-	puts("--a z Achse Fullstep, CLK\r--s Z Reset High\r--d Z Reset low\r--f Z Enable high\r--g Z Enable low\r");// Servo klemmen\r--l Servo öffnen\r--m Servo in Mittelstellung\r");
+	puts("--a z Achse CCW\r--s z Achse CW\r\r--d R1 CCW\r--f R1 CW\r\r--g R2 CCW\r--h R2 CW\r\r--y Servo klemmen\r--x Servo öffnen\r--c Servo in Mittelstellung\r ");
 
 
 	while(true){
 		
-		/* Timer für Encoder stoppen wenn keine Achse aktiv ist */
+		// Timer für Encoder stoppen wenn keine Achse aktiv ist //
 	if(active[0] == false && active[1] == false && active[2] == false){
 		tc_stop(TC0, 1);
 	}
@@ -103,67 +103,57 @@ int main (void)
 			pio_set_pin_high(ZYLINDER_ZACHSE);
 			break;
 		
-			case 'a':	
-			pio_set_pin_low(r1.M1);
-			pio_set_pin_low(r1.M2);
-			pio_set_pin_high(r1.M3);
-			
-			timer_init(r1.pwm, 800);	
-			tc_start(r1.pwm.Timercounter, r1.pwm.channel);
-			
-			printf("M1 low, M2 low, M3 high, CLK rennt\r");
-			
-/*			printf("Anzahl Schritte: \r");
+			case 'a':				
+			printf("Anzahl Schritte: \r");
 			steps = get_input_value();
 			printf("\rFahre %d Schritte.\r", steps);
-			numberOfSteps(zAchse, steps, FULLSTEP, CLOCKWISE);*/
-			break;
+			numberOfSteps(zAchse, steps, COUNTERCLOCKWISE);
+			break;	
 			
 			case 's':
-			pio_set_pin_high(r1.RESET);
-			NVIC_EnableIRQ(TC2_IRQn);
-			printf("Reset high\r");
-			break;
-			
-			case 'd':
-			pio_set_pin_low(r1.RESET);
-			NVIC_DisableIRQ(TC2_IRQn);
-			printf("Reset low\r");
+			printf("Anzahl Schritte: \r");
+			steps = get_input_value();
+			printf("\rFahre %d Schritte.\r", steps);
+			numberOfSteps(zAchse, steps, CLOCKWISE);
 			break;			
-			
+		
+			case 'd':
+			printf("Anzahl Schritte: \r");
+			steps = get_input_value();
+			printf("\rFahre %d Schritte.\r", steps);
+			numberOfSteps(r1, steps, COUNTERCLOCKWISE);
+			break;
+		
 			case 'f':
-			pio_set_pin_high(r1.ENBLE);
-			printf("Enable high\r");
+			printf("Anzahl Schritte: \r");
+			steps = get_input_value();
+			printf("\rFahre %d Schritte.\r", steps);
+			numberOfSteps(r1, steps, CLOCKWISE);
+			break;
+		
+			case 'g':
+			printf("Anzahl Schritte: \r");
+			steps = get_input_value();
+			printf("\rFahre %d Schritte.\r", steps);
+			numberOfSteps(r2, steps, COUNTERCLOCKWISE);
 			break;
 			
-			case 'g':
-			pio_set_pin_low(r1.ENBLE);
-			printf("Enable low\r");
-			break;
-		
-			case 'r':
+			case 'h':
 			printf("Anzahl Schritte: \r");
 			steps = get_input_value();
 			printf("\rFahre %d Schritte.\r", steps);
-			numberOfSteps(r1, steps, FULLSTEP, CLOCKWISE);
-			break;
+			numberOfSteps(r2, steps, CLOCKWISE);
+			break;		
 		
-			case 't':		
-			printf("Anzahl Schritte: \r");
-			steps = get_input_value();
-			printf("\rFahre %d Schritte.\r", steps);
-			numberOfSteps(r2, steps, FULLSTEP, CLOCKWISE);
-			break;
-		
-			/*case 's':
+			case 'y':
 			pwm_channel_update_duty(PWM, &pwm_pin_7, 21);
-			break;*/
+			break;
 		
-			case 'l':
+			case 'x':
 			pwm_channel_update_duty(PWM, &pwm_pin_7, 42);
 			break;
 			
-			case 'm':
+			case 'c':
 			pwm_channel_update_duty(PWM, &pwm_pin_7, 30);
 			break;
 		

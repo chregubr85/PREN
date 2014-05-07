@@ -49,6 +49,9 @@
 #include "PWM_TC.h"
 #include "Ablauf.h"
 
+int NORM_FREQ_R1_R2 = 400;
+int NORM_FREQ_Z		= 700;
+
 
 void board_init(void)
 {
@@ -58,11 +61,6 @@ void board_init(void)
 			pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD2, PIO_DEFAULT);	//M3
 			pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD3, PIO_DEFAULT);	//ENABLE
 			pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD6, PIO_DEFAULT);	//CW/CCW
-			
-			
-			pio_configure(PIOB, PIO_INPUT, PIO_PB25, PIO_DEFAULT);
-			
-			
 			pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD9, PIO_DEFAULT);	//RESET
 			pio_configure(PIOC, PIO_INPUT, PIO_PC15, PIO_PULLUP);		//Encoder Channel A
 			pio_configure(PIOC, PIO_INPUT, PIO_PC14, PIO_PULLUP);		//Encoder Channel B
@@ -84,9 +82,11 @@ void board_init(void)
 			zAchse.pwm		= pwm2;
 			zAchse.ENC_A	= PIO_PC15_IDX;
 			zAchse.ENC_B	= PIO_PC14_IDX;
-
 	
-	
+	// Init and start Timer
+		timer_init(zAchse.pwm, setStepperMode(zAchse, FULLSTEP)*NORM_FREQ_Z);
+	// set Enable high -> holding Tork
+		pio_set_pin_high(zAchse.ENBLE);
 
 	
 	/*Pin Deffinieren für Stepper1 R1*/
@@ -117,6 +117,11 @@ void board_init(void)
 	r1.ENC_A	= PIO_PC13_IDX;
 	r1.ENC_B	= PIO_PC12_IDX;
 	
+	// Init and start Timer
+	timer_init(r1.pwm,setStepperMode(r1, FULLSTEP)*NORM_FREQ_R1_R2);
+	// set Enable high -> holding Tork
+	pio_set_pin_high(r1.ENBLE);
+		
 	
 	/*Pin Deffinieren für Stepper1 R2*/
 			pio_configure(PIOC, PIO_OUTPUT_0, PIO_PC9, PIO_DEFAULT);	//M1
@@ -145,7 +150,12 @@ void board_init(void)
 			r2.pwm		= pwm5;
 			r2.ENC_A	= PIO_PB21_IDX;
 			r2.ENC_B	= PIO_PB14_IDX;
-	
+
+	// Init and start Timer
+	timer_init(r2.pwm,setStepperMode(r2, FULLSTEP)*NORM_FREQ_R1_R2);
+	// set Enable high -> holding Tork
+	pio_set_pin_high(r2.ENBLE);	
+		
 	
 	/*SERVO*/
 	//Clock Settings
@@ -216,7 +226,7 @@ void board_init(void)
 				pio_configure_pin(PIO_PC22_IDX, PIO_PERIPH_B | PIO_DEFAULT);
 				pio_configure_pin(PIO_PC23_IDX, PIO_PERIPH_B | PIO_DEFAULT);
 
-	
+	/**************************************************************************************************/
 	/*ARDUINO DEFINED*/
 	
 	

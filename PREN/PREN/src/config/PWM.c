@@ -9,14 +9,14 @@
 #include "encoder.h"
 
 
-int NORM_FREQ_R1_R2 = 400;
-int NORM_FREQ_Z		= 700;
+
 
 uint32_t g_steps_z = 0;
 uint32_t g_steps_r1 = 0;
 uint32_t g_steps_r2 = 0;
 uint32_t captured = 0;
 uint32_t count_z = 0;
+uint32_t count_r1 = 0;
 uint32_t count_r2 = 0;
 
 
@@ -84,17 +84,11 @@ int getFreqeunz(t_PinPwm pin){
 * CW: Direction, true = Clockwise
 * multistep: 1 = Full-Step, 2 = Half-Step, 4 = 1/4 Step, 8 = 1/8 Step, 16 = 1/16 Step
 */
-int setStepperMode(t_Stepper pin, bool CW, uint32_t multistep){
+int setStepperMode( t_Stepper pin, uint32_t multistep )
+{
 	
 	int multi = 0;
-	
-	
-	if(CW){
-		pio_set_pin_low(pin.CW_CCW);	
-	}
-	else
-		pio_set_pin_high(pin.CW_CCW);
-		
+
 	
 	switch(multistep){
 		case 1:
@@ -156,7 +150,8 @@ void timer_init( t_PinPwm pin, int freq )
 		pin.Timercounter->TC_CHANNEL[pin.channel].TC_IER = TC_IER_CPCS;
 		pin.Timercounter->TC_CHANNEL[pin.channel].TC_IER =~ TC_IDR_CPCS;
 	/*Wert für RC schreiben*/					
-		tc_write_rc(pin.Timercounter, pin.channel, getValueRCforFreq(freq));	
+		tc_write_rc(pin.Timercounter, pin.channel, getValueRCforFreq(freq));
+		tc_start(pin.Timercounter, pin.channel);	
 }
 
 
@@ -167,47 +162,44 @@ void timer_init( t_PinPwm pin, int freq )
 * mode: Full-, Half.... Steps
 * CW : True = CW
 */
-void numberOfSteps( t_Stepper axis, int steps, uint32_t mode, bool CW )
+void numberOfSteps( t_Stepper axis, int steps, bool CW )
 {
-	int multi = setStepperMode(axis, CW, mode);
-	
-	//ZAchse
-	if(axis.pwm.pin_id == PIO_PB25_IDX){ 
-		encode_init(axis.pwm);
-		pio_set_pin_high(axis.RESET);
-		pio_set_pin_high(axis.ENBLE);		
-		timer_init(axis.pwm, (NORM_FREQ_Z * multi));
+	// Direction
+	if(CW){
+		pio_set_pin_low(axis.CW_CCW);
 	}
-	//R1 und R2
 	else{
-		encode_init(axis.pwm);
-		pio_set_pin_high(axis.RESET);
-		pio_set_pin_high(axis.ENBLE);		
-		timer_init(axis.pwm, (NORM_FREQ_R1_R2*multi));	
+		pio_set_pin_high(axis.CW_CCW);
 	}
-		/*Interrupt PWM Z-Achse*/////axis.pwm.Timercounter == TC0 && axis.pwm.channel == 0
-		if(axis.pwm.pin_id == PIO_PB25_IDX){
-			g_steps_z = 2 * steps;
-			encode[0] = 3;
-			NVIC_EnableIRQ(TC0_IRQn);
-			tc_start(axis.pwm.Timercounter, axis.pwm.channel);
-		}
-		/*Interrupt PWM R1*/
-		if(axis.pwm.Timercounter == TC2 && axis.pwm.channel == 1){
-			g_steps_r1 = 2 * steps;
-			encode[1] = 0;
-			NVIC_EnableIRQ(TC7_IRQn);
-			tc_start(axis.pwm.Timercounter, axis.pwm.channel);
-		}
-		/*Interrupt PWM R2*/
-		if(axis.pwm.Timercounter == TC2 && axis.pwm.channel == 0){
-			g_steps_r2 = 2 * steps;
-			encode[2]=0;
-			NVIC_EnableIRQ(TC6_IRQn);
-			tc_start(r2.pwm.Timercounter, r2.pwm.channel);
-
-		}
 	
+	encode_init(axis.pwm);
+	
+	/*Interrupt PWM Z-Achse*/
+	if(axis.pwm.Timercounter == TC0 && axis.pwm.channel == 0){
+		printf("z\r");
+		g_steps_z = 2 * steps;
+		encode[0] = 0;
+		pio_set_pin_high(axis.RESET);
+		NVIC_EnableIRQ(TC0_IRQn);
+	}
+		
+	/*Interrupt PWM R1*/
+	if(axis.pwm.Timercounter == TC2 && axis.pwm.channel == 1){
+		printf("r1\r");
+		g_steps_r1 = 2 * steps;
+		encode[1] = 0;
+		pio_set_pin_high(axis.RESET);
+		NVIC_EnableIRQ(TC7_IRQn);
+	}
+	
+	/*Interrupt PWM R2*/
+	if(axis.pwm.Timercounter == TC2 && axis.pwm.channel == 0){
+		printf("r2\r");
+		g_steps_r2 = 2 * steps;
+		encode[2]=0;
+		pio_set_pin_high(axis.RESET);
+		NVIC_EnableIRQ(TC6_IRQn);
+	}
 }
 
 
@@ -216,14 +208,14 @@ void TC0_Handler(){
 	TC0->TC_CHANNEL[0].TC_SR;
 	//encode[0] += encode_zAchse_read4();
 	count_z++;
-	
-	//if(encode [0] == g_steps_z){
-	if(count_z == 1600){
-		//tc_stop(TC0, 0);
+	printf("Steps: %d\r", count_z);
+	//if(Abs(encode [0]) == g_steps_z){
+	if(count_z == g_steps_z){
+		count_z = 0;
 		pio_set_pin_low(zAchse.RESET);
 		active[0]=false;
-		//pio_configure(PIOB, PIO_INPUT, PIO_PB25, PIO_DEFAULT);
-		printf("Encoder z: %d\r", encode[0]);
+		NVIC_DisableIRQ(TC0_IRQn);
+		//printf("Encoder z: %d\r", encode[0]);
 	}
 }
 
@@ -232,12 +224,17 @@ void TC0_Handler(){
 /*ISR PWM3 R1*/
 void TC7_Handler(){
 	TC2->TC_CHANNEL[1].TC_SR;
-	encode[1] += encode_r1_read4();
+	//encode[1] += encode_r1_read4();
+	count_r1++;
+	printf("Steps: %d\r", count_r1);
+
 	
-	if(Abs(encode[1]) == g_steps_r1){
-		tc_stop(TC2, 1);
+	//if(Abs(encode[1]) == g_steps_r1){
+	if(count_r1 == g_steps_r1){
+		count_r1 = 0;
+		pio_set_pin_low(r1.RESET);
 		active[1] = false;
-		pio_configure(PIOC, PIO_INPUT, PIO_PC28, PIO_DEFAULT);
+		NVIC_DisableIRQ(TC7_IRQn);
 	//	printf("Encoder r1: %d\r", encode[1]);
 	}
 }
@@ -245,15 +242,17 @@ void TC7_Handler(){
 /*ISR PWM5 R2*/
 void TC6_Handler(){
 	TC2->TC_CHANNEL[0].TC_SR;
-	/*encode[2] += encode_r2_read4();
-				printf("Steps: %d\r", g_steps_r2);*/
+	//encode[2] += encode_r2_read4();
+
 	count_r2++;
+	printf("Steps: %d\r", count_r2);	
 	
-	if(count_r2== g_steps_r2){
-		tc_stop(TC2, 0);
+	//if(Abs(encode[2]) == g_steps_r2){
+	if(count_r2 == g_steps_r2){
+		count_r2 = 0;
+		pio_set_pin_low(r2.RESET);
 		active[2] = false;
-		pio_configure(PIOC, PIO_INPUT, PIO_PC25, PIO_DEFAULT);
-		//pio_set_pin_low(r2.RESET);
+		NVIC_DisableIRQ(TC6_IRQn);
 	//	printf("Encoder r2: %d\r", encode[2]);
 	}
 }
@@ -262,15 +261,4 @@ void TC6_Handler(){
 void TC8_Handler(){
 	TC2->TC_CHANNEL[2].TC_SR;
 	captured++;
-}
-
-/*ISR PIOD*/
-void PIOD_ISR(uint32_t id, uint32_t mask)
-{
-	if (ID_PIOD == id && PIO_PD0 == mask){
-	}
-	if (ID_PIOD == id && PIO_PD1 == mask){
-	}
-	if (ID_PIOD == id && PIO_PD2 == mask){
-	}
 }
