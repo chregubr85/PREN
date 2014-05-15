@@ -176,7 +176,6 @@ void numberOfSteps( t_Stepper axis, int steps, bool CW )
 	
 	/*Interrupt PWM Z-Achse*/
 	if(axis.pwm.Timercounter == TC0 && axis.pwm.channel == 0){
-		printf("z\r");
 		g_steps_z = 2 * steps;
 		encode[0] = 0;
 		pio_set_pin_high(axis.RESET);
@@ -185,7 +184,6 @@ void numberOfSteps( t_Stepper axis, int steps, bool CW )
 		
 	/*Interrupt PWM R1*/
 	if(axis.pwm.Timercounter == TC2 && axis.pwm.channel == 1){
-		printf("r1\r");
 		g_steps_r1 = 2 * steps;
 		encode[1] = 0;
 		pio_set_pin_high(axis.RESET);
@@ -194,7 +192,6 @@ void numberOfSteps( t_Stepper axis, int steps, bool CW )
 	
 	/*Interrupt PWM R2*/
 	if(axis.pwm.Timercounter == TC2 && axis.pwm.channel == 0){
-		printf("r2\r");
 		g_steps_r2 = 2 * steps;
 		encode[2]=0;
 		pio_set_pin_high(axis.RESET);
@@ -206,16 +203,17 @@ void numberOfSteps( t_Stepper axis, int steps, bool CW )
 /*ISR PWM2 Z-ACHSE*/
 void TC0_Handler(){
 	TC0->TC_CHANNEL[0].TC_SR;
-	//encode[0] += encode_zAchse_read4();
+	encode[0] += encode_zAchse_read4();
+	//printf("Encoder z: %d\r", encode[0]);
 	count_z++;
-	printf("Steps: %d\r", count_z);
-	//if(Abs(encode [0]) == g_steps_z){
-	if(count_z == g_steps_z){
+	//printf("Steps: %d\r", count_z);
+	if(Abs(encode [0]) == g_steps_z){
+	//if(count_z == g_steps_z){
 		count_z = 0;
 		pio_set_pin_low(zAchse.RESET);
 		active[0]=false;
 		NVIC_DisableIRQ(TC0_IRQn);
-		//printf("Encoder z: %d\r", encode[0]);
+		printf("Encoder z: %d\r", encode[0]);
 	}
 }
 
@@ -224,18 +222,18 @@ void TC0_Handler(){
 /*ISR PWM3 R1*/
 void TC7_Handler(){
 	TC2->TC_CHANNEL[1].TC_SR;
-	//encode[1] += encode_r1_read4();
+	encode[1] += encode_r1_read4();
 	count_r1++;
-	printf("Steps: %d\r", count_r1);
+	//printf("Steps: %d\r", count_r1);
 
 	
-	//if(Abs(encode[1]) == g_steps_r1){
-	if(count_r1 == g_steps_r1){
+	//if(Abs(encode[1]) == g_steps_r1 || Abs(encode[1]) == ){
+	if(count_r1 == g_steps_r1 || Abs(encode[1]) == g_steps_r1){
 		count_r1 = 0;
 		pio_set_pin_low(r1.RESET);
 		active[1] = false;
 		NVIC_DisableIRQ(TC7_IRQn);
-	//	printf("Encoder r1: %d\r", encode[1]);
+		printf("Encoder r1: %d\r", encode[1]);
 	}
 }
 
@@ -253,7 +251,7 @@ void TC6_Handler(){
 		pio_set_pin_low(r2.RESET);
 		active[2] = false;
 		NVIC_DisableIRQ(TC6_IRQn);
-	//	printf("Encoder r2: %d\r", encode[2]);
+		printf("Encoder r2: %d\r", encode[2]);
 	}
 }
 

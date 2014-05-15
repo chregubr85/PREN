@@ -120,8 +120,8 @@ int8_t encode_zAchse_read4(void)         // read four step encoders
 	
 	TC0->TC_CHANNEL[1].TC_IER = TC_IER_CPCS;
 	TC0->TC_CHANNEL[1].TC_IER =~ TC_IDR_CPCS;
-
 	return val >> 2;
+	
 }
 
 int8_t encode_r1_read4(void)         // read four step encoders

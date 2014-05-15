@@ -55,6 +55,10 @@ int NORM_FREQ_Z		= 700;
 
 void board_init(void)
 {
+	
+	ioport_init();
+	
+	
 	/*Pin Deffinieren für Stepper1 Z-Achse*/
 			pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD0, PIO_DEFAULT);	//M1
 			pio_configure(PIOD, PIO_OUTPUT_0, PIO_PD1, PIO_DEFAULT);	//M2
@@ -211,12 +215,13 @@ void board_init(void)
 	
 	//Zylinder Z-Achse
 	pio_configure(PIOA, PIO_OUTPUT_0, PIO_PA2, PIO_DEFAULT);
-	
-	
+	pio_set_pin_low(PIO_PA2_IDX);
+
 	//Zylinder Stack öffen
 	pio_configure(PIOA, PIO_OUTPUT_0, PIO_PA6, PIO_DEFAULT);
+	pio_set_pin_low(PIO_PA6_IDX);
 	
-	//Reserver Ventiltreiber
+	//Reserve Ventiltreiber
 	pio_configure(PIOA, PIO_OUTPUT_0, PIO_PA4, PIO_DEFAULT);
 	pio_set_pin_low(PIO_PA4_IDX);
 

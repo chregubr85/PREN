@@ -69,14 +69,14 @@ int main (void)
 	
 
 	uint32_t steps;
-
+	uint32_t pwm = 42;
 	
 	configure_console();
 	board_init();
 	sysclk_init();
 	
 	
-	puts("--a z Achse CCW\r--s z Achse CW\r\r--d R1 CCW\r--f R1 CW\r\r--g R2 CCW\r--h R2 CW\r\r--y Servo klemmen\r--x Servo öffnen\r--c Servo in Mittelstellung\r ");
+	puts("--i Zylinder Z aus\r--o Zyliner Z ein\r\r--k Zylinder Stack aus\r--l Zylinder Stack ein\r\r--r Read Initiator R1\r--t Read Initiator R2\r--z Read Initiator Z\r\r--a Z CCW\r--s Z CW\r\r--d R1 CCW\r--f R1 CW\r\r--g R2 CCW\r--h R2 CW\r\r--x Servo öffnen\r--c Servo in Mittelstellung\r ");
 
 
 	while(true){
@@ -85,7 +85,6 @@ int main (void)
 	if(active[0] == false && active[1] == false && active[2] == false){
 		tc_stop(TC0, 1);
 	}
-	
 
 	key = uart_getc();
 	 	if (key & UART_NO_DATA )
@@ -101,6 +100,27 @@ int main (void)
 			
 			case 'o':
 			pio_set_pin_high(ZYLINDER_ZACHSE);
+			break;
+
+			case 'k':
+			pio_set_pin_low(ZYLINDER_STACK);
+			break;
+			
+			case 'l':
+			pio_set_pin_high(ZYLINDER_STACK);
+			break;
+			
+			case 'r':
+			pio_enable_interrupt(PIOA, INIT_R1);
+			printf("Initiator R1: %d\r", pio_get_pin_value(INIT_R1));
+			break;
+			
+			case 't':
+			printf("Initiator R2: %d\r", pio_get_pin_value(INIT_R2));
+			break;
+			
+			case 'z':
+			printf("Initiator Z: %d\r", pio_get_pin_value(INIT_Z));
 			break;
 		
 			case 'a':				
@@ -130,7 +150,18 @@ int main (void)
 			printf("\rFahre %d Schritte.\r", steps);
 			numberOfSteps(r1, steps, CLOCKWISE);
 			break;
-		
+			
+			case 'v':
+			printf("Enable: %d ,Reset: %d\r", pio_get_pin_value(r1.ENBLE), pio_get_pin_value(r1.RESET));
+			break;
+			
+			case 'b':
+			pio_set_pin_high(r1.ENBLE);
+			break;
+			
+			case 'n':
+			pio_set_pin_low(r1.ENBLE);
+			break;
 			case 'g':
 			printf("Anzahl Schritte: \r");
 			steps = get_input_value();
@@ -144,18 +175,14 @@ int main (void)
 			printf("\rFahre %d Schritte.\r", steps);
 			numberOfSteps(r2, steps, CLOCKWISE);
 			break;		
-		
-			case 'y':
-			pwm_channel_update_duty(PWM, &pwm_pin_7, 21);
-			break;
-		
+			
 			case 'x':
 			pwm_channel_update_duty(PWM, &pwm_pin_7, 42);
 			break;
 			
 			case 'c':
-			pwm_channel_update_duty(PWM, &pwm_pin_7, 30);
-			break;
+			pwm_channel_update_duty(PWM, &pwm_pin_7, 36);
+			break;		
 		
 			default:
 			printf("%d is not used! \r\n", key);

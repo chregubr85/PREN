@@ -114,7 +114,7 @@ void getCube(uint32_t steps_r1, uint32_t steps_r2, uint32_t steps_z){
 	}
 	
 	//Servo in Mittelstellung
-	pwm_channel_update_duty(PWM, &pwm_pin_7, 30);
+	pwm_channel_update_duty(PWM, &pwm_pin_7, 36);
 	
 	//Kran senken
 	pio_set_pin_high(ZYLINDER_ZACHSE);
@@ -184,27 +184,30 @@ void ISR_INIT(uint32_t id, uint32_t mask){
 	/*R1*/
 	if (ID_PIOA == id && INIT_R1 == mask)
 	{
-		tc_stop(TC2, 1);
+		//tc_stop(TC2, 1); //TODO
+		printf("R1\r");
+		pio_set_pin_low(r1.RESET);
 		active[1] = false;
-		pio_configure(PIOC, PIO_INPUT, PIO_PC28, PIO_DEFAULT);
 		encode[1] = 0;
 		pio_disable_interrupt(PIOA, INIT_R1);
 	}
 	/*R2*/
 	if (ID_PIOA == id && INIT_R2 == mask)
 	{
-		tc_stop(TC2, 0);
+		printf("R2\r");
+		//tc_stop(TC2, 0); //TODO
+		pio_set_pin_low(r2.RESET);
 		active[2] = false;
-		pio_configure(PIOC, PIO_INPUT, PIO_PC25, PIO_DEFAULT);
 		encode[1] = 0;
 		pio_disable_interrupt(PIOA, INIT_R2);
 	}
 	/*ZAchse*/
 	if (ID_PIOA == id && INIT_Z == mask)
 	{
-		tc_stop(TC0, 0);
+		printf("Z\r");
+		//tc_stop(TC0, 0); //TODO
+		pio_set_pin_low(zAchse.RESET);
 		active[0]=false;
-		pio_configure(PIOB, PIO_INPUT, PIO_PB25, PIO_DEFAULT);
 		encode[0] = 0;
 		pio_disable_interrupt(PIOA, INIT_Z);
 	}	
