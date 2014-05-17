@@ -20,19 +20,27 @@ uint32_t initialPosition(void){
 	pio_enable_interrupt(PIOA, INIT_R2);	//R2
 	pio_enable_interrupt(PIOA, INIT_Z);		//Z
 	
-	numberOfSteps(r1, MAXSTEPS, COUNTERCLOCKWISE);				
-	numberOfSteps(r2, MAXSTEPS, COUNTERCLOCKWISE);
-	if(encode[0] > 0){				
-		numberOfSteps(zAchse, MAXSTEPS, COUNTERCLOCKWISE);
-	}
-	else{
-		numberOfSteps(zAchse, MAXSTEPS, CLOCKWISE);
+	if(!pio_get_pin_value(INIT_R1_IDX)){
+		numberOfSteps(r1, MAXSTEPS, COUNTERCLOCKWISE);	
 	}
 	
-	while(active[0] ||  active[1] || active[2])
+	if(!pio_get_pin_value(INIT_Z_IDX)){
+	numberOfSteps(zAchse, MAXSTEPS, CLOCKWISE);
+	}
+	delay_ms(50);
+	while(active[1]){
+		delay_ms(50);
+	}
+	if(!pio_get_pin_value(INIT_R2_IDX)){
+		numberOfSteps(r2, MAXSTEPS, CLOCKWISE);	
+	}
+	
+	while(active[0] || active[1] ||active[2])
 	{
 	delay_ms(50);	
 	}
+	
+	delay_s(1);
 	
 	startPositionOK = startPosition();
 	
@@ -45,18 +53,18 @@ uint32_t initialPosition(void){
 /* Grundposition Anfahren (Startfeld) */
 bool startPosition(void){
 	
-	if(!pio_get_pin_value(INIT_R1))
+	if(!pio_get_pin_value(INIT_R1_IDX))
 	{
-		pio_enable_interrupt(PIOA, INIT_R1);
+		pio_enable_interrupt(PIOA, INIT_R1_IDX);
 		numberOfSteps(r1, MAXSTEPS, COUNTERCLOCKWISE);	
 	}
-	if(!pio_get_pin_value(INIT_R2))
+	if(!pio_get_pin_value(INIT_R2_IDX) & pio_get_pin_value(INIT_R1_IDX))
 	{
-		pio_enable_interrupt(PIOA, INIT_R2);
+		pio_enable_interrupt(PIOA, INIT_R2_IDX);
 		numberOfSteps(r2, MAXSTEPS, COUNTERCLOCKWISE);
 	}	
 	
-	numberOfSteps(zAchse, STARTPOSITION_Z, CLOCKWISE);	
+	numberOfSteps(zAchse, STARTPOSITION_Z, COUNTERCLOCKWISE);	
 	
 	while(active[0] ||  active[1] || active[2])
 	{
@@ -71,7 +79,7 @@ bool startPosition(void){
 bool gotoPositonKinect(void){
 	
 	//Enable Interrupts
-	pio_enable_interrupt(PIOA, INIT_Z);	//Z
+	pio_enable_interrupt(PIOA, INIT_Z_IDX);	//Z
 	
 
 	numberOfSteps(zAchse, KINECTPOSITION, CLOCKWISE);
@@ -184,32 +192,36 @@ void ISR_INIT(uint32_t id, uint32_t mask){
 	/*R1*/
 	if (ID_PIOA == id && INIT_R1 == mask)
 	{
-		//tc_stop(TC2, 1); //TODO
 		printf("R1\r");
 		pio_set_pin_low(r1.RESET);
+		NVIC_DisableIRQ(TC7_IRQn);
 		active[1] = false;
 		encode[1] = 0;
-		pio_disable_interrupt(PIOA, INIT_R1);
+		//pio_disable_interrupt(PIOA, INIT_R1);
+		
+		printf("INIT INTER: Encoder r1: %d\r", encode[1]);
 	}
 	/*R2*/
 	if (ID_PIOA == id && INIT_R2 == mask)
 	{
 		printf("R2\r");
-		//tc_stop(TC2, 0); //TODO
 		pio_set_pin_low(r2.RESET);
+		NVIC_DisableIRQ(TC6_IRQn);
 		active[2] = false;
-		encode[1] = 0;
-		pio_disable_interrupt(PIOA, INIT_R2);
+		encode[2] = 0;
+		//pio_disable_interrupt(PIOA, INIT_R2);
+		
+		printf("INIT INTER: Encoder r2: %d\r", encode[2]);
 	}
 	/*ZAchse*/
 	if (ID_PIOA == id && INIT_Z == mask)
 	{
 		printf("Z\r");
-		//tc_stop(TC0, 0); //TODO
 		pio_set_pin_low(zAchse.RESET);
+		NVIC_DisableIRQ(TC0_IRQn);
 		active[0]=false;
 		encode[0] = 0;
-		pio_disable_interrupt(PIOA, INIT_Z);
-	}	
+	//	pio_disable_interrupt(PIOA, INIT_Z);
+	}
 	
 }

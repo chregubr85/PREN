@@ -49,8 +49,8 @@
 #include "PWM_TC.h"
 #include "Ablauf.h"
 
-int NORM_FREQ_R1_R2 = 400;
-int NORM_FREQ_Z		= 700;
+int NORM_FREQ_R1_R2 = 400;//400;
+int NORM_FREQ_Z		= 500;//700;
 
 
 void board_init(void)
@@ -209,13 +209,18 @@ void board_init(void)
 	//ZAchse
 	pio_configure(PIOA, PIO_INPUT, PIO_PA23, PIO_DEFAULT);
 	pio_handler_set(PIOA, ID_PIOA, PIO_PA23, PIO_IT_RISE_EDGE, ISR_INIT);
-	
 	NVIC_EnableIRQ(PIOA_IRQn);
+	
+		//Enable Interrupts
+		pio_enable_interrupt(PIOA, INIT_R1);	//R1
+		pio_enable_interrupt(PIOA, INIT_R2);	//R2
+		pio_enable_interrupt(PIOA, INIT_Z);		//Z
 	
 	
 	//Zylinder Z-Achse
 	pio_configure(PIOA, PIO_OUTPUT_0, PIO_PA2, PIO_DEFAULT);
 	pio_set_pin_low(PIO_PA2_IDX);
+	
 
 	//Zylinder Stack öffen
 	pio_configure(PIOA, PIO_OUTPUT_0, PIO_PA6, PIO_DEFAULT);
@@ -373,3 +378,4 @@ void board_init(void)
 	gpio_configure_pin(SPI0_NPCS0_GPIO, SPI0_NPCS0_FLAGS);
 #endif
 }
+

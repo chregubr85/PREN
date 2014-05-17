@@ -32,6 +32,7 @@
 #define UART_OK				 0x20				  /* Daten empfangen			  */
 #define UART_NOK			 0x21				  /* Daten nicht empfangen		  */
 #define UART_INIT			 0x22				  /* Initialisieren abgeschlossen */
+#define UART_DEBUG			 "/"				  /* Debug Kommando				  */
 #define UART_EMPTY			 0x00				  /* leeres Byte	    		  */
 
 /*

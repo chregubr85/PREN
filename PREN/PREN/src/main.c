@@ -76,7 +76,7 @@ int main (void)
 	sysclk_init();
 	
 	
-	puts("--i Zylinder Z aus\r--o Zyliner Z ein\r\r--k Zylinder Stack aus\r--l Zylinder Stack ein\r\r--r Read Initiator R1\r--t Read Initiator R2\r--z Read Initiator Z\r\r--a Z CCW\r--s Z CW\r\r--d R1 CCW\r--f R1 CW\r\r--g R2 CCW\r--h R2 CW\r\r--x Servo öffnen\r--c Servo in Mittelstellung\r ");
+	puts("--y Interrupts\r\r--i Zylinder Z aus\r--o Zyliner Z ein\r\r--k Zylinder Stack aus\r--l Zylinder Stack ein\r\r--r Read Initiator R1\r--t Read Initiator R2\r--z Read Initiator Z\r\r--a Z CCW\r--s Z CW\r\r--d R1 CCW\r--f R1 CW\r\r--g R2 CCW\r--h R2 CW\r\r--x Servo öffnen\r--c Servo in Mittelstellung\r ");
 
 
 	while(true){
@@ -111,16 +111,15 @@ int main (void)
 			break;
 			
 			case 'r':
-			pio_enable_interrupt(PIOA, INIT_R1);
-			printf("Initiator R1: %d\r", pio_get_pin_value(INIT_R1));
+			printf("Initiator R1: %d\r", pio_get_pin_value(INIT_R1_IDX));
 			break;
 			
 			case 't':
-			printf("Initiator R2: %d\r", pio_get_pin_value(INIT_R2));
+			printf("Initiator R2: %d\r", pio_get_pin_value(INIT_R2_IDX));
 			break;
 			
 			case 'z':
-			printf("Initiator Z: %d\r", pio_get_pin_value(INIT_Z));
+			printf("Initiator Z: %d\r", pio_get_pin_value(INIT_Z_IDX));
 			break;
 		
 			case 'a':				
@@ -162,6 +161,7 @@ int main (void)
 			case 'n':
 			pio_set_pin_low(r1.ENBLE);
 			break;
+			
 			case 'g':
 			printf("Anzahl Schritte: \r");
 			steps = get_input_value();
@@ -182,8 +182,36 @@ int main (void)
 			
 			case 'c':
 			pwm_channel_update_duty(PWM, &pwm_pin_7, 36);
-			break;		
-		
+			break;	
+			
+			case 'q':
+			printf("/DEBUG MESSAGE FROM ARDUINO TO PC\r");	
+			break;
+			
+			case 'u':
+			//printf("Encode maxvalue Z: %d\r", encode[0]);
+			printf("Encode maxvalue R1: %d\r", encode[1]);
+			//printf("Encode maxvalue R2: %d\r", encode[2]);
+			break;
+			
+			case 'y':
+			pio_set_pin_low(zAchse.RESET);
+			pio_set_pin_low(r1.RESET);
+			pio_set_pin_low(r2.RESET);
+			break;
+			
+			case 'p':
+			initialPosition();
+			break;
+			
+			case 'm':
+			encode_init(zAchse.pwm);
+			while(true){
+				encode[0]+=encode_zAchse_read4();
+				printf("Encode Z: %d\r", encode[0]);
+			}
+			break;
+			
 			default:
 			printf("%d is not used! \r\n", key);
 			}

@@ -7,6 +7,7 @@
 
 #include "PWM_TC.h"
 #include "encoder.h"
+#include "Ablauf.h"
 
 
 
@@ -176,8 +177,8 @@ void numberOfSteps( t_Stepper axis, int steps, bool CW )
 	
 	/*Interrupt PWM Z-Achse*/
 	if(axis.pwm.Timercounter == TC0 && axis.pwm.channel == 0){
-		g_steps_z = 2 * steps;
-		encode[0] = 0;
+		g_steps_z = -5 * steps;
+		//encode[0] = 0;
 		pio_set_pin_high(axis.RESET);
 		NVIC_EnableIRQ(TC0_IRQn);
 	}
@@ -185,15 +186,15 @@ void numberOfSteps( t_Stepper axis, int steps, bool CW )
 	/*Interrupt PWM R1*/
 	if(axis.pwm.Timercounter == TC2 && axis.pwm.channel == 1){
 		g_steps_r1 = 2 * steps;
-		encode[1] = 0;
+	//	encode[1] = 0;
 		pio_set_pin_high(axis.RESET);
 		NVIC_EnableIRQ(TC7_IRQn);
 	}
 	
 	/*Interrupt PWM R2*/
 	if(axis.pwm.Timercounter == TC2 && axis.pwm.channel == 0){
-		g_steps_r2 = 2 * steps;
-		encode[2]=0;
+		g_steps_r2 = 5 * steps;
+		//encode[2]=0;
 		pio_set_pin_high(axis.RESET);
 		NVIC_EnableIRQ(TC6_IRQn);
 	}
@@ -204,11 +205,11 @@ void numberOfSteps( t_Stepper axis, int steps, bool CW )
 void TC0_Handler(){
 	TC0->TC_CHANNEL[0].TC_SR;
 	encode[0] += encode_zAchse_read4();
-	//printf("Encoder z: %d\r", encode[0]);
-	count_z++;
-	//printf("Steps: %d\r", count_z);
-	if(Abs(encode [0]) == g_steps_z){
-	//if(count_z == g_steps_z){
+
+	count_z--;
+
+	//if(encode [0] >= g_steps_z || encode[0] >= MAXVALUE_ENC_Z){
+	if(count_z <= g_steps_z){
 		count_z = 0;
 		pio_set_pin_low(zAchse.RESET);
 		active[0]=false;
@@ -226,32 +227,29 @@ void TC7_Handler(){
 	count_r1++;
 	//printf("Steps: %d\r", count_r1);
 
-	
-	//if(Abs(encode[1]) == g_steps_r1 || Abs(encode[1]) == ){
-	if(count_r1 == g_steps_r1 || Abs(encode[1]) == g_steps_r1){
+//	if(encode[1] >= g_steps_r1 || encode[1] >= MAXVALUE_ENC_R1){
+	if(count_r1 >= g_steps_r1 ){
 		count_r1 = 0;
 		pio_set_pin_low(r1.RESET);
 		active[1] = false;
 		NVIC_DisableIRQ(TC7_IRQn);
-		printf("Encoder r1: %d\r", encode[1]);
+		printf("CLK INTER: Encoder r1: %d\r", encode[1]);
 	}
 }
 
 /*ISR PWM5 R2*/
 void TC6_Handler(){
 	TC2->TC_CHANNEL[0].TC_SR;
-	//encode[2] += encode_r2_read4();
-
+	encode[2] += encode_r2_read4();
 	count_r2++;
-	printf("Steps: %d\r", count_r2);	
 	
-	//if(Abs(encode[2]) == g_steps_r2){
-	if(count_r2 == g_steps_r2){
+	//if(encode[2] >= g_steps_r2 || encode[2] >= MAXVALUE_ENC_R2){
+	if(count_r2 >= g_steps_r2 ){
 		count_r2 = 0;
 		pio_set_pin_low(r2.RESET);
 		active[2] = false;
 		NVIC_DisableIRQ(TC6_IRQn);
-		printf("Encoder r2: %d\r", encode[2]);
+		printf("CLK INTER: Encoder r2: %d\r", encode[2]);
 	}
 }
 
