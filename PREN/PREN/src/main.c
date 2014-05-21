@@ -69,14 +69,14 @@ int main (void)
 	
 
 	uint32_t steps;
-	uint32_t pwm = 42;
+	uint32_t encValue = 0;
 	
 	configure_console();
 	board_init();
 	sysclk_init();
 	
 	
-	puts("--y Interrupts\r\r--i Zylinder Z aus\r--o Zyliner Z ein\r\r--k Zylinder Stack aus\r--l Zylinder Stack ein\r\r--r Read Initiator R1\r--t Read Initiator R2\r--z Read Initiator Z\r\r--a Z CCW\r--s Z CW\r\r--d R1 CCW\r--f R1 CW\r\r--g R2 CCW\r--h R2 CW\r\r--x Servo öffnen\r--c Servo in Mittelstellung\r ");
+	puts("--i Zylinder Z aus\r--o Zyliner Z ein\r\r--k Zylinder Stack aus\r--l Zylinder Stack ein\r\r--a Z CCW\r--s Z CW\r\r--d R1 CCW\r--f R1 CW\r\r--g R2 CCW\r--h R2 CW\r\r--x Servo öffnen\r--c Servo in Mittelstellung\r ");
 
 
 	while(true){
@@ -109,71 +109,53 @@ int main (void)
 			case 'l':
 			pio_set_pin_high(ZYLINDER_STACK);
 			break;
-			
-			case 'r':
-			printf("Initiator R1: %d\r", pio_get_pin_value(INIT_R1_IDX));
-			break;
-			
-			case 't':
-			printf("Initiator R2: %d\r", pio_get_pin_value(INIT_R2_IDX));
-			break;
-			
-			case 'z':
-			printf("Initiator Z: %d\r", pio_get_pin_value(INIT_Z_IDX));
-			break;
-		
-			case 'a':				
+					
+			case 'a':	//Z CCW			
 			printf("Anzahl Schritte: \r");
 			steps = get_input_value();
-			printf("\rFahre %d Schritte.\r", steps);
-			numberOfSteps(zAchse, steps, COUNTERCLOCKWISE);
+			encValue = encode[0] + (-5*steps);
+			printf("\rFahre %d Schritte.\r", encValue);
+			gotoPosition(zAchse, encValue);
 			break;	
 			
-			case 's':
+			case 's':	//z CW
 			printf("Anzahl Schritte: \r");
 			steps = get_input_value();
-			printf("\rFahre %d Schritte.\r", steps);
-			numberOfSteps(zAchse, steps, CLOCKWISE);
+			encValue = encode[0] - (-5*steps);
+			printf("\rFahre %d Schritte.\r", encValue);
+			gotoPosition(zAchse, encValue);
 			break;			
 		
-			case 'd':
+			case 'd':	//R1 CCW
 			printf("Anzahl Schritte: \r");
 			steps = get_input_value();
-			printf("\rFahre %d Schritte.\r", steps);
-			numberOfSteps(r1, steps, COUNTERCLOCKWISE);
+			encValue = encode[1] - (4*steps);
+			printf("\rFahre %d Schritte.\r", encValue);
+			gotoPosition(r1, encValue);
 			break;
 		
-			case 'f':
+			case 'f':	//R1 CW
 			printf("Anzahl Schritte: \r");
 			steps = get_input_value();
-			printf("\rFahre %d Schritte.\r", steps);
-			numberOfSteps(r1, steps, CLOCKWISE);
+			encValue = encode[1] + (4*steps);
+			printf("\rFahre %d Schritte.\r", encValue);
+			gotoPosition(r1, encValue);
 			break;
 			
-			case 'v':
-			printf("Enable: %d ,Reset: %d\r", pio_get_pin_value(r1.ENBLE), pio_get_pin_value(r1.RESET));
-			break;
-			
-			case 'b':
-			pio_set_pin_high(r1.ENBLE);
-			break;
-			
-			case 'n':
-			pio_set_pin_low(r1.ENBLE);
-			break;
-			
-			case 'g':
+			case 'g':	//R2 CCW
 			printf("Anzahl Schritte: \r");
 			steps = get_input_value();
-			printf("\rFahre %d Schritte.\r", steps);
-			numberOfSteps(r2, steps, COUNTERCLOCKWISE);
+			encValue = encode[2] + (5*steps);
+			printf("\rFahre %d Schritte.\r", encValue);
+			gotoPosition(r2, encValue);
 			break;
 			
-			case 'h':
+			case 'h':	//R2 CW
 			printf("Anzahl Schritte: \r");
 			steps = get_input_value();
-			printf("\rFahre %d Schritte.\r", steps);
-			numberOfSteps(r2, steps, CLOCKWISE);
+			encValue = encode[2] - (5*steps);
+			printf("\rFahre %d Schritte.\r", encValue);
+			gotoPosition(r2, encValue);
 			break;		
 			
 			case 'x':
@@ -234,15 +216,17 @@ int main (void)
 		switch(key){
 
 			case 0x00: //Hello
-				uart_get_data();
+				uart_get_data();			// cleaer the buffer
 				uart_send(UART_OK_32);
 			break;
 			
 			case 0x01: // Initialisieren  
-				uart_get_data();
-			//	init_ok = initialPosition(); 
-				init_ok = UART_INIT_OK;
-				uart_send(init_ok);
+				uart_get_data();			// cleaer the buffer
+				
+				init_ok = initialPosition(); 
+				if(startPosition()){
+					uart_send(init_ok);
+				}
 			break;
 			
 			case 0x02: // Würfel 1 R1  

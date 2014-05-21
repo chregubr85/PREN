@@ -54,7 +54,7 @@ t_Stepper r2;
 pwm_channel_t pwm_pin_7; //Servo
 
 /* Array mit den Encoderwerten für Z-Achse, R1 und R2
-/* Encode = 0 in Initialposition */
+   Encode = 0 in Initialposition */
 int32_t encode[3];	
 
 bool active[3];		//Aktivitätsüberwachung der drei Achsen (false = nicht aktiv)
@@ -66,6 +66,6 @@ int getValueRCforFreq(int freq);
 int getPrescaler(int freq);
 int getFreqeunz(t_PinPwm pin);
 void timer_init(t_PinPwm pin, int freq);
-void numberOfSteps(t_Stepper axis, int steps, bool CW);
+void gotoPosition(t_Stepper axis, int encValue);
 int setStepperMode(t_Stepper pin, uint32_t multistep);
 #endif /* PWM_H_ */

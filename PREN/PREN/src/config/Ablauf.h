@@ -20,13 +20,13 @@
 #define ZYLINDER_STACK PIO_PA6_IDX
 
 /* Define Maximalvalues */
-#define MAXSTEPS		200000000
+#define MAXSTEPS		20000
 #define MAXVALUE_ENC_R1	2650
-#define MAXVALUE_ENC_R2 3000//TODO
-#define MAXVALUE_ENC_Z	-13390//TODO
+#define MAXVALUE_ENC_R2 3000
+#define MAXVALUE_ENC_Z	-13390
 
 /* Define Positions */
-#define STARTPOSITION_Z 1377 // Encoderwert = -2.5 * Startposition_z (-6885 = -2.5 * 1377)
+#define STARTPOSITION_Z -6885
 #define KINECTPOSITION	500	//TODO
 #define PLACE_TOWER_R1	500 //TODO
 #define PLACE_TOWER_R2	500 //TODO

@@ -71,9 +71,9 @@ TC1_Handler(void)
 		new_z = 3;
 		}
 		if( pio_get_pin_value(zAchse.ENC_B) ){
-		new_z ^= 1;							// convert gray to binary 
+		new_z ^= 1;								// convert gray to binary 
 		}
-		diff_z = last_z - new_z;					// difference last - new
+		diff_z = last_z - new_z;				// difference last - new
 		if( diff_z & 1 ){						// bit 0 = value (1)
 			last_z = new_z;						// store new as next last
 			enc_delta_z += (diff_z & 2) - 1;	// bit 1 = direction (+/-)
@@ -87,9 +87,9 @@ TC1_Handler(void)
 			new_r1 ^= 1;							// convert gray to binary
 		}
 		diff_r1 = last_r1 - new_r1;					// difference last - new
-		if( diff_r1 & 1 ){						// bit 0 = value (1)
+		if( diff_r1 & 1 ){							// bit 0 = value (1)
 			last_r1 = new_r1;						// store new as next last
-			enc_delta_r1 += (diff_r1 & 2) - 1;	// bit 1 = direction (+/-)
+			enc_delta_r1 += (diff_r1 & 2) - 1;		// bit 1 = direction (+/-)
 		}		
 		
 		//R2
@@ -100,14 +100,14 @@ TC1_Handler(void)
 			new_r2 ^= 1;							// convert gray to binary
 		}
 		diff_r2 = last_r2 - new_r2;					// difference last - new
-		if( diff_r2 & 1 ){						// bit 0 = value (1)
+		if( diff_r2 & 1 ){							// bit 0 = value (1)
 			last_r2 = new_r2;						// store new as next last
-			enc_delta_r2 += (diff_r2 & 2) - 1;	// bit 1 = direction (+/-)
+			enc_delta_r2 += (diff_r2 & 2) - 1;		// bit 1 = direction (+/-)
 		}		
 }
 
 
-int8_t encode_zAchse_read4(void)         // read four step encoders
+int8_t encode_zAchse_read4(void)					// read four step encoders
 {
 	int8_t val;
 	
@@ -124,7 +124,7 @@ int8_t encode_zAchse_read4(void)         // read four step encoders
 	
 }
 
-int8_t encode_r1_read4(void)         // read four step encoders
+int8_t encode_r1_read4(void)						// read four step encoders
 {
 	int8_t val;
 	
@@ -141,7 +141,7 @@ int8_t encode_r1_read4(void)         // read four step encoders
 	return val >> 2;
 }
 
-int8_t encode_r2_read4(void)         // read four step encoders
+int8_t encode_r2_read4(void)						// read four step encoders
 {
 	int8_t val;
 	

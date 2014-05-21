@@ -195,6 +195,18 @@ void board_init(void)
 				TC0->TC_CHANNEL[1].TC_IER = TC_IER_CPCS;
 				TC0->TC_CHANNEL[1].TC_IER =~ TC_IDR_CPCS;
 				NVIC_EnableIRQ(TC1_IRQn);
+				
+	//TC8 mit 1kHz (Enoder auslesen)
+				sysclk_enable_peripheral_clock(ID_TC8);
+				tc_init(TC2, 2,TC_CMR_TCCLKS_TIMER_CLOCK1			// ((84*10^6)/2)/freq = RC
+				| TC_CMR_WAVE /* Waveform mode */
+				| TC_CMR_WAVSEL_UP_RC
+				);
+				tc_write_rc(TC2, 2, 42000);
+				/*Interrupt enable*/
+				TC2->TC_CHANNEL[2].TC_IER = TC_IER_CPCS;
+				TC2->TC_CHANNEL[2].TC_IER =~ TC_IDR_CPCS;
+				NVIC_EnableIRQ(TC8_IRQn);		
 	
 	
 	//Initiatoren für Initialisierung
@@ -217,6 +229,7 @@ void board_init(void)
 		pio_enable_interrupt(PIOA, INIT_Z);		//Z
 	
 	
+	
 	//Zylinder Z-Achse
 	pio_configure(PIOA, PIO_OUTPUT_0, PIO_PA2, PIO_DEFAULT);
 	pio_set_pin_low(PIO_PA2_IDX);
@@ -232,9 +245,9 @@ void board_init(void)
 
 	
 	/*PWM 7,8,9*/
-				pio_configure_pin(PIO_PC21_IDX, PIO_PERIPH_B | PIO_DEFAULT);
-				pio_configure_pin(PIO_PC22_IDX, PIO_PERIPH_B | PIO_DEFAULT);
-				pio_configure_pin(PIO_PC23_IDX, PIO_PERIPH_B | PIO_DEFAULT);
+	pio_configure_pin(PIO_PC21_IDX, PIO_PERIPH_B | PIO_DEFAULT);
+	pio_configure_pin(PIO_PC22_IDX, PIO_PERIPH_B | PIO_DEFAULT);
+	pio_configure_pin(PIO_PC23_IDX, PIO_PERIPH_B | PIO_DEFAULT);
 
 	/**************************************************************************************************/
 	/*ARDUINO DEFINED*/
