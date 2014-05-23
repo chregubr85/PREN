@@ -7,7 +7,7 @@
 
 #include "PWM_TC.h"
 
-
+int32_t enc = 0;
 
 volatile int8_t enc_delta_z, enc_delta_r1, enc_delta_r2;          // -128 ... 127
 static int8_t last_z, last_r1, last_r2;
@@ -31,11 +31,11 @@ void encode_init( t_PinPwm pwm )
 	}		
 	
 	//ZAchse:
-	if( pio_get_pin_value(zAchse.ENC_A) )
-	new_z = 3;
 	if( pio_get_pin_value(zAchse.ENC_B) )
-	new_z ^= 1;					   // convert gray to binary
-	last_z = new_z;                   // power on state
+	new_z = 3;
+	if( pio_get_pin_value(zAchse.ENC_A) )
+	new_z ^= 1;							 // convert gray to binary
+	last_z = new_z;						 // power on state
 	enc_delta_z = 0;
 	
 	//R1
@@ -67,10 +67,10 @@ TC1_Handler(void)
 
 
 		//ZAchse
-		if( pio_get_pin_value(zAchse.ENC_A) ){
+		if( pio_get_pin_value(zAchse.ENC_B) ){
 		new_z = 3;
 		}
-		if( pio_get_pin_value(zAchse.ENC_B) ){
+		if( pio_get_pin_value(zAchse.ENC_A) ){
 		new_z ^= 1;								// convert gray to binary 
 		}
 		diff_z = last_z - new_z;				// difference last - new
@@ -110,7 +110,7 @@ TC1_Handler(void)
 int8_t encode_zAchse_read4(void)					// read four step encoders
 {
 	int8_t val;
-	
+
 	TC0->TC_CHANNEL[1].TC_IDR = TC_IER_CPCS;
 	TC0->TC_CHANNEL[1].TC_IDR =~ TC_IDR_CPCS;
 	
@@ -120,8 +120,9 @@ int8_t encode_zAchse_read4(void)					// read four step encoders
 	
 	TC0->TC_CHANNEL[1].TC_IER = TC_IER_CPCS;
 	TC0->TC_CHANNEL[1].TC_IER =~ TC_IDR_CPCS;
-	return val >> 2;
 	
+	return val >> 2;
+
 }
 
 int8_t encode_r1_read4(void)						// read four step encoders
@@ -131,7 +132,7 @@ int8_t encode_r1_read4(void)						// read four step encoders
 	TC0->TC_CHANNEL[1].TC_IDR = TC_IER_CPCS;
 	TC0->TC_CHANNEL[1].TC_IDR =~ TC_IDR_CPCS;
 	
-	//ZAchse
+	//R1
 	val = enc_delta_r1;
 	enc_delta_r1 = val & 3;
 	
@@ -148,7 +149,7 @@ int8_t encode_r2_read4(void)						// read four step encoders
 	TC0->TC_CHANNEL[1].TC_IDR = TC_IER_CPCS;
 	TC0->TC_CHANNEL[1].TC_IDR =~ TC_IDR_CPCS;
 	
-	//ZAchse
+	//R2
 	val = enc_delta_r2;
 	enc_delta_r2 = val & 3;
 	

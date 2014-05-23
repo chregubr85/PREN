@@ -207,7 +207,7 @@ void board_init(void)
 				TC2->TC_CHANNEL[2].TC_IER = TC_IER_CPCS;
 				TC2->TC_CHANNEL[2].TC_IER =~ TC_IDR_CPCS;
 				NVIC_EnableIRQ(TC8_IRQn);		
-	
+				tc_start(TC2, 2);
 	
 	//Initiatoren für Initialisierung
 	//R1

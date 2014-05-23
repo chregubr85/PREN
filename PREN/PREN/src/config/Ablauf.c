@@ -10,22 +10,24 @@
 #include "Ablauf.h"
 
 
+uint32_t countKinect = 0;
+
 /* Initialposition Anfahren */
 uint32_t initialPosition(void){
 	
 	if(!pio_get_pin_value(INIT_R1_IDX)){
-		gotoPosition(r1, 0);	
+		gotoPosition(r1, -MAXVALUE_ENC_R1);	
 	}
 	
 	if(!pio_get_pin_value(INIT_Z_IDX)){
-	gotoPosition(zAchse, 0);
+	gotoPosition(zAchse, MAXVALUE_ENC_Z);
 	}
 	delay_ms(50);
 	while(active[1]){
 		delay_ms(50);
 	}
 	if(!pio_get_pin_value(INIT_R2_IDX)){
-		gotoPosition(r2, 0);	
+		gotoPosition(r2, -MAXVALUE_ENC_R2);	
 	}
 	
 	while(active[0] || active[1] ||active[2])
@@ -68,17 +70,40 @@ bool startPosition(void){
 /* Spielfeld abfahren für Kinect */
 bool gotoPositonKinect(void){
 	
-	initialPosition();
-	
-
-	gotoPosition(zAchse, (encode[0]+KINECTPOSITION));
-	
-	while(active[0])
-	{
-		delay_ms(50);
+	if(countKinect == 0 || countKinect ==3){
+		gotoPosition(zAchse, (encode[0]+KINECTPOSITION_90));
+		while(active[0]) {
+			delay_ms(50);
+		}
+			
+		countKinect++;
+		return true;
 	}
 	
-	return true;
+	else if(countKinect == 1 || countKinect ==4){
+		gotoPosition(zAchse, (encode[0]+KINECTPOSITION_135));
+		while(active[0]) {
+			delay_ms(50);
+		}
+		
+		countKinect++;
+		return true;
+	}	
+	
+	else if(countKinect == 2 || countKinect ==5){
+		gotoPosition(zAchse, (encode[0]+KINECTPOSITION_180));
+		while(active[0]) {
+			delay_ms(50);
+		}
+			if(countKinect == 2){
+				countKinect++;
+				return startPosition();	
+			}
+			else{
+				countKinect = 0;
+				return true;
+			}
+	}
 	
 }
 

@@ -76,7 +76,7 @@ int main (void)
 	sysclk_init();
 	
 	
-	puts("--i Zylinder Z aus\r--o Zyliner Z ein\r\r--k Zylinder Stack aus\r--l Zylinder Stack ein\r\r--a Z CCW\r--s Z CW\r\r--d R1 CCW\r--f R1 CW\r\r--g R2 CCW\r--h R2 CW\r\r--x Servo öffnen\r--c Servo in Mittelstellung\r ");
+	puts("--i Zylinder Z aus\r--o Zyliner Z ein\r\r--k Zylinder Stack aus\r--l Zylinder Stack ein\r\r--a Z CCW\r--s Z CW\r\r--d R1 CCW\r--f R1 CW\r\r--g R2 CCW\r--h R2 CW\r\r--x Servo öffnen\r--c Servo in Mittelstellung\r\r--n Initial Position anfahren\r--m Start Position anfahren\r\r--y Alle Motoren aus\r");
 
 
 	while(true){
@@ -170,28 +170,22 @@ int main (void)
 			printf("/DEBUG MESSAGE FROM ARDUINO TO PC\r");	
 			break;
 			
-			case 'u':
-			//printf("Encode maxvalue Z: %d\r", encode[0]);
-			printf("Encode maxvalue R1: %d\r", encode[1]);
-			//printf("Encode maxvalue R2: %d\r", encode[2]);
-			break;
-			
 			case 'y':
 			pio_set_pin_low(zAchse.RESET);
 			pio_set_pin_low(r1.RESET);
 			pio_set_pin_low(r2.RESET);
 			break;
 			
-			case 'p':
+			case 'n':
 			initialPosition();
 			break;
 			
 			case 'm':
-			encode_init(zAchse.pwm);
-			while(true){
-				encode[0]+=encode_zAchse_read4();
-				printf("Encode Z: %d\r", encode[0]);
-			}
+			startPosition();
+			break;
+			
+			case',':
+			printf("Encode Z: %d\r", encode[0]);
 			break;
 			
 			default:
@@ -230,93 +224,93 @@ int main (void)
 			break;
 			
 			case 0x02: // Würfel 1 R1  
-				cubePositions[0][0] =	uart_get_data();
+				cubePositions[0][0] =	4*uart_get_data();
 				uart_send(cubePositions[0][0]);
 
 			break;
 			
 			case 0x03: // Würfel 1 R2  
-				cubePositions[1][0] =	uart_get_data();
+				cubePositions[1][0] =	5*uart_get_data();
 				uart_send(cubePositions[1][0]);			
 			break;
 			
 			case 0x04: // Würfel 1 Phi  
-				cubePositions[2][0] =	uart_get_data();
+				cubePositions[2][0] =	-5*uart_get_data();
 				uart_send(cubePositions[2][0]);			
 			break;
 			
 			case 0x05: // Würfel 2 R1  
-				cubePositions[0][1] =	uart_get_data();
+				cubePositions[0][1] =	4*uart_get_data();
 				uart_send(cubePositions[0][1]);			
 			break;
 			
 			case 0x06: // Würfel 2 R2  
-				cubePositions[1][1] =	uart_get_data();
+				cubePositions[1][1] =	5*uart_get_data();
 				uart_send(cubePositions[1][1]);			
 			break;
 			
 			case 0x07: // Würfel 2 Phi  
-				cubePositions[2][1] =	uart_get_data();
+				cubePositions[2][1] =	-5*uart_get_data();
 				uart_send(cubePositions[2][1]);			
 			break;
 			
 			case 0x08: // Würfel 3 R1  
-				cubePositions[0][2] =	uart_get_data();
+				cubePositions[0][2] =	4*uart_get_data();
 				uart_send(cubePositions[0][2]);			
 			break;
 			
 			case 0x09: // Würfel 3 R2  
-				cubePositions[1][2] =	uart_get_data();
+				cubePositions[1][2] =	5*uart_get_data();
 				uart_send(cubePositions[1][2]);			
 			break;
 			
 			case 0x0A: // Würfel 3 Phi  
-				cubePositions[2][2] =	uart_get_data();
+				cubePositions[2][2] =	-5*uart_get_data();
 				uart_send(cubePositions[2][2]);			
 			break;
 			
 			case 0x0B: // Würfel 4 R1  
-				cubePositions[0][3] =	uart_get_data();
+				cubePositions[0][3] =	4*uart_get_data();
 				uart_send(cubePositions[0][3]);			
 			break;
 			
 			case 0x0C: // Würfel 4 R2  
-				cubePositions[1][3] =	uart_get_data();
+				cubePositions[1][3] =	5*uart_get_data();
 				uart_send(cubePositions[1][3]);			
 			break;
 			
 			case 0x0D: // Würfel 4 Phi  
-				cubePositions[2][3] =	uart_get_data();
+				cubePositions[2][3] =	-5*uart_get_data();
 				uart_send(cubePositions[2][3]);			
 			break;
 			
 			case 0x0E: // Würfel 5 R1  
-				cubePositions[0][4] =	uart_get_data();
+				cubePositions[0][4] =	4*uart_get_data();
 				uart_send(cubePositions[0][4]);			
 			break;
 			
 			case 0x0F: // Würfel 5 R2  
-				cubePositions[1][4] =	uart_get_data();
+				cubePositions[1][4] =	5*uart_get_data();
 				uart_send(cubePositions[1][4]);			
 			break;
 			
 			case 0x10: // Würfel 5 Phi  
-				cubePositions[2][4] =	uart_get_data();
+				cubePositions[2][4] =	-5*uart_get_data();
 				uart_send(cubePositions[2][4]);			
 			break;
 			
 			case 0x11: // Würfel 6 R1  
-				cubePositions[0][5] =	uart_get_data();
+				cubePositions[0][5] =	4*uart_get_data();
 				uart_send(cubePositions[0][5]);			
 			break;
 			
 			case 0x12: // Würfel 6 R2  
-				cubePositions[1][5] =	uart_get_data();
+				cubePositions[1][5] =	5*uart_get_data();
 				uart_send(cubePositions[1][5]);			
 			break;
 			
 			case 0x13: // Würfel 6 Phy  
-				cubePositions[2][5] =	uart_get_data();
+				cubePositions[2][5] =	-5*uart_get_data();
 				uart_send(cubePositions[2][5]);			
 			break;
 			

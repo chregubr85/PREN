@@ -162,37 +162,47 @@ void gotoPosition( t_Stepper axis, int encValue )
 		
 		if(encode[0] > encValue){				// Direction Clockwise
 			pio_set_pin_low(axis.CW_CCW);
+			globalEncValueZ = encValue;
 		}
 		else{									// Direction Counterclockwise
 			pio_set_pin_high(axis.CW_CCW);
+			globalEncValueZ = encValue;
 		}
 
 		pio_set_pin_high(axis.RESET);
 		NVIC_EnableIRQ(TC0_IRQn);
 	}
 		
+		
 	/*Interrupt PWM R1*/
 	if(axis.pwm.Timercounter == TC2 && axis.pwm.channel == 1){
 		
 		if(encode[1] < encValue){				// Direction Clockwise
 			pio_set_pin_low(axis.CW_CCW);
+			globalEncValueR1 = encValue;
+			printf("Encoder R1: %d     Sollwert R1: %d\r", encode[1], encValue);
 		}
 		else{									// Direction Counterclockwise
 			pio_set_pin_high(axis.CW_CCW);
+			globalEncValueR1 = encValue;
+			printf("Encoder R1: %d     Sollwert R1: %d\r", encode[1], encValue);
 		}
 		
 		pio_set_pin_high(axis.RESET);
 		NVIC_EnableIRQ(TC7_IRQn);
 	}
 	
+	
 	/*Interrupt PWM R2*/
 	if(axis.pwm.Timercounter == TC2 && axis.pwm.channel == 0){
 		
 		if(encode[2] > encValue){				// Direction Clockwise
 			pio_set_pin_low(axis.CW_CCW);
+			globalEncValueR2 = encValue;
 		}
 		else{									// Direction Counterclockwise
 			pio_set_pin_high(axis.CW_CCW);
+			globalEncValueR2 = encValue;
 		}
 		
 		pio_set_pin_high(axis.RESET);
@@ -204,13 +214,12 @@ void gotoPosition( t_Stepper axis, int encValue )
 /*ISR PWM2 Z-ACHSE*/
 void TC0_Handler(){
 	TC0->TC_CHANNEL[0].TC_SR;
-
-
-	if(encode [0] >= globalEncValueZ || encode[0] >= MAXVALUE_ENC_Z){
+	printf("ENC: %d\r", encode[0]);
+	if(encode [0] == globalEncValueZ || encode[0] <= MAXVALUE_ENC_Z){
 		pio_set_pin_low(zAchse.RESET);
 		active[0]=false;
 		NVIC_DisableIRQ(TC0_IRQn);
-		printf("Encoder z: %d\r", encode[0]);
+		printf("Encoder Z: %d ", encode[0]);
 	}
 }
 
@@ -221,11 +230,11 @@ void TC7_Handler(){
 	TC2->TC_CHANNEL[1].TC_SR;
 
 
-	if(encode[1] >= globalEncValueR1 || encode[1] >= MAXVALUE_ENC_R1){
+	if(encode[1] == globalEncValueR1 || encode[1] >= MAXVALUE_ENC_R1){
 		pio_set_pin_low(r1.RESET);
 		active[1] = false;
 		NVIC_DisableIRQ(TC7_IRQn);
-		printf("CLK INTER: Encoder r1: %d\r", encode[1]);
+		printf("Encoder R1: %d ", encode[1]);
 	}
 }
 
@@ -235,7 +244,7 @@ void TC6_Handler(){
 
 
 	
-	if(encode[2] >= globalEncValueR2 || encode[2] >= MAXVALUE_ENC_R2){
+	if(encode[2] == globalEncValueR2 || encode[2] >= MAXVALUE_ENC_R2){
 		pio_set_pin_low(r2.RESET);
 		active[2] = false;
 		NVIC_DisableIRQ(TC6_IRQn);
