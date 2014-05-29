@@ -12,10 +12,8 @@
 
 
 
-uint32_t globalEncValueZ = 0;
-uint32_t globalEncValueR1 = 0;
-uint32_t globalEncValueR2 = 0;
-uint32_t captured = 0;
+
+
 
 
 /*Gibt den Wert für für das RC Register zurück, -> wie "weit" soll
@@ -141,9 +139,7 @@ void timer_init( t_PinPwm pin, int freq )
 	| TC_CMR_ACPC_SET /* Clear bei RC */
 	| TC_CMR_CPCTRG /* Trigger bei RC */
 	);
-	/*Interrupt enable*/
-		pin.Timercounter->TC_CHANNEL[pin.channel].TC_IER = TC_IER_CPCS;
-		pin.Timercounter->TC_CHANNEL[pin.channel].TC_IER =~ TC_IDR_CPCS;
+
 	/*Wert für RC schreiben*/					
 		tc_write_rc(pin.Timercounter, pin.channel, getValueRCforFreq(freq));
 		tc_start(pin.Timercounter, pin.channel);	
@@ -161,45 +157,45 @@ void gotoPosition( t_Stepper axis, int encValue )
 		pio_disable_interrupt(PIOA, INIT_R2);
 	}
 	
-	/*Interrupt PWM Z-Achse*/
+	/*Stop condition PWM Z-Achse*/
 	if(axis.pwm.Timercounter == TC0 && axis.pwm.channel == 0){
 		
 		if(encode[0] < encValue){				// Direction Clockwise
 			pio_set_pin_high(axis.CW_CCW);
 			globalEncValueZ = encValue;
-			printf("\r\rEncoder Z: %d     Sollwert Z: %d\r", encode[0], encValue);
+			//printf("\r\rEncoder Z: %d     Sollwert Z: %d\r", encode[0], encValue);
 		}
 		else{									// Direction Counterclockwise
 			pio_set_pin_low(axis.CW_CCW);
-			printf("\r\rEncoder Z_pin low: %d     Sollwert Z: %d\r", encode[0], encValue);
+		//	printf("\r\rEncoder Z_pin low: %d     Sollwert Z: %d\r", encode[0], encValue);
 			globalEncValueZ = encValue;
 		}
 
 		pio_set_pin_high(axis.RESET);
-		NVIC_EnableIRQ(TC0_IRQn);
+	//	NVIC_EnableIRQ(TC0_IRQn);
 	}
 		
 		
-	/*Interrupt PWM R1*/
+	/*Stop condition PWM R1*/
 	if(axis.pwm.Timercounter == TC2 && axis.pwm.channel == 1){
 		
 		if(encode[1] < encValue){				// Direction Clockwise
 			pio_set_pin_low(axis.CW_CCW);
 			globalEncValueR1 = encValue;
-			printf("\r\rEncoder R1: %d     Sollwert R1: %d\r", encode[1], encValue);
+		//	printf("\r\rEncoder R1: %d     Sollwert R1: %d\r", encode[1], encValue);
 		}
 		else{									// Direction Counterclockwise
 			pio_set_pin_high(axis.CW_CCW);
 			globalEncValueR1 = encValue;
-			printf("\r\rEncoder R1_pin_high: %d     Sollwert R1: %d\r", encode[1], encValue);
+		//	printf("\r\rEncoder R1_pin_high: %d     Sollwert R1: %d\r", encode[1], encValue);
 		}
 		
 		pio_set_pin_high(axis.RESET);
-		NVIC_EnableIRQ(TC7_IRQn);
+	//	NVIC_EnableIRQ(TC7_IRQn);
 	}
 	
 	
-	/*Interrupt PWM R2*/
+	/*Stop condition PWM R2*/
 	if(axis.pwm.Timercounter == TC2 && axis.pwm.channel == 0){
 		
 		//enable Interrupt R2 if not Initialposition
@@ -210,16 +206,16 @@ void gotoPosition( t_Stepper axis, int encValue )
 		if(encode[2] > encValue){				// Direction Clockwise
 			pio_set_pin_low(axis.CW_CCW);
 			globalEncValueR2 = encValue;
-			printf("\r\rEncoder R2: %d     Sollwert R2: %d\r", encode[2], encValue);
+		//	printf("\r\rEncoder R2: %d     Sollwert R2: %d\r", encode[2], encValue);
 		}
 		else{									// Direction Counterclockwise
 			pio_set_pin_high(axis.CW_CCW);
-			printf("\r\rEncoder R2_pin high: %d     Sollwert R2: %d\r", encode[2], encValue);
+		//	printf("\r\rEncoder R2_pin high: %d     Sollwert R2: %d\r", encode[2], encValue);
 			globalEncValueR2 = encValue;
 		}
 		
 		pio_set_pin_high(axis.RESET);
-		NVIC_EnableIRQ(TC6_IRQn);
+		//NVIC_EnableIRQ(TC6_IRQn);
 	}
 }
 

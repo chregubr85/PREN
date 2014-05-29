@@ -219,9 +219,9 @@ int main (void)
 
 
 
-
-
 /*
+
+	//while(true){
 
 	key = uart_getc();	
 	if (key & UART_NO_DATA )
@@ -241,9 +241,9 @@ int main (void)
 				uart_get_data();			// cleaer the buffer
 				
 				init_ok = initialPosition(); 
-				if(startPosition()){
+			//	if(startPosition()){			TODO UNCOMMENT
 					uart_send(init_ok);
-				}
+			//	}
 			break;
 			
 			case 0x02: // Würfel 1 R1  
@@ -383,9 +383,9 @@ int main (void)
 			break;			
 
 			default:
-				printf("ERROR\r");
+				printf("/ERROR COMMAND\r");
+				}
 			}
-
-		}*/
+		*/
 	}
 }

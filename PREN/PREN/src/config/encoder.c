@@ -6,6 +6,7 @@
  */ 
 
 #include "PWM_TC.h"
+#include "Ablauf.h"
 
 int32_t enc = 0;
 
@@ -104,6 +105,31 @@ TC1_Handler(void)
 			last_r2 = new_r2;						// store new as next last
 			enc_delta_r2 += (diff_r2 & 2) - 1;		// bit 1 = direction (+/-)
 		}		
+		
+		
+		
+		//
+		// Stop Steppers
+		//
+		if(encode [0] == globalEncValueZ || encode[0] >= MAXVALUE_ENC_Z){
+			pio_set_pin_low(zAchse.RESET);
+			active[0]=false;
+		}
+		
+		if(encode[1] == globalEncValueR1 || encode[1] >= MAXVALUE_ENC_R1){
+			pio_set_pin_low(r1.RESET);
+			active[1] = false;
+		}
+	
+		if(encode[2] == globalEncValueR2 || encode[2] >= MAXVALUE_ENC_R2){
+			pio_set_pin_low(r2.RESET);
+			active[2] = false;
+		}
+	
+	
+	
+	
+		
 }
 
 

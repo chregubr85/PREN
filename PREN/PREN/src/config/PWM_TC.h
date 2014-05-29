@@ -20,7 +20,9 @@
 #define COUNTERCLOCKWISE false
 
 
-
+uint32_t globalEncValueZ ;
+uint32_t globalEncValueR1;
+uint32_t globalEncValueR2;
 
 typedef struct {
 		Tc  *Timercounter;

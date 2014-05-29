@@ -71,8 +71,9 @@ bool startPosition(void){
 /* Spielfeld abfahren für Kinect */
 bool gotoPositonKinect(void){
 	
+	
 	if(countKinect == 0 || countKinect ==3){
-		gotoPosition(zAchse, (encode[0]+KINECTPOSITION_90));
+		gotoPosition(zAchse,KINECTPOSITION_90);
 		while(active[0]) {
 			delay_ms(50);
 		}
@@ -82,7 +83,7 @@ bool gotoPositonKinect(void){
 	}
 	
 	else if(countKinect == 1 || countKinect ==4){
-		gotoPosition(zAchse, (encode[0]+KINECTPOSITION_135));
+		gotoPosition(zAchse, KINECTPOSITION_135);
 		while(active[0]) {
 			delay_ms(50);
 		}
@@ -92,13 +93,13 @@ bool gotoPositonKinect(void){
 	}	
 	
 	else if(countKinect == 2 || countKinect ==5){
-		gotoPosition(zAchse, (encode[0]+KINECTPOSITION_180));
+		gotoPosition(zAchse, KINECTPOSITION_180);
 		while(active[0]) {
 			delay_ms(50);
 		}
 			if(countKinect == 2){
 				countKinect++;
-				return startPosition();	
+				return true;	
 			}
 			else{
 				countKinect = 0;
@@ -115,25 +116,26 @@ void getCube(uint32_t steps_r1, uint32_t steps_r2, uint32_t steps_z){
 	
 	gotoPosition(r2, steps_r2);	
 	
-	//gotoPosition(zAchse, steps_z);
+	//gotoPosition(zAchse, steps_z);  TODO UNCOMMENT
 
 	
 	while(active[0] || active[1] || active[2])
 	{
 		delay_ms(50);
 	}
+	delay_s(1);			//wait after position reached
 	
 	//Servo in Mittelstellung
 	pwm_channel_update_duty(PWM, &pwm_pin_7, 42);
-	
+	delay_ms(500);		//wait for opening Servo
 	
 	//Kran senken
 	pio_set_pin_high(ZYLINDER_ZACHSE);
-	delay_s(2);
-	
+	delay_s(2);			//wait for getting down
+		
 	//Servo Klemmen
 	pwm_channel_update_duty(PWM, &pwm_pin_7, 36);
-	delay_ms(500);
+	delay_ms(500);		//wait for closing Servo
 	
 	//Kran heben
 	pio_set_pin_low(ZYLINDER_ZACHSE);
