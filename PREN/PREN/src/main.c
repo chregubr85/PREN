@@ -113,7 +113,7 @@ int main (void)
 			case 'a':	//Z CCW			
 			printf("Anzahl Schritte: \r");
 			steps = get_input_value();
-			encValue = encode[0] + (-5*steps);
+			encValue = encode[0] + (5*steps);
 			printf("\rFahre %d Schritte.\r", encValue);
 			gotoPosition(zAchse, encValue);
 			break;	
@@ -121,7 +121,7 @@ int main (void)
 			case 's':	//z CW
 			printf("Anzahl Schritte: \r");
 			steps = get_input_value();
-			encValue = encode[0] - (-5*steps);
+			encValue = encode[0] - (5*steps);
 			printf("\rFahre %d Schritte.\r", encValue);
 			gotoPosition(zAchse, encValue);
 			break;			
@@ -171,9 +171,22 @@ int main (void)
 			break;
 			
 			case 'y':
+			//Z
 			pio_set_pin_low(zAchse.RESET);
+			active[0]=false;
+			NVIC_DisableIRQ(TC0_IRQn);
+			printf("Encoder Z: %d ", encode[0]);
+			//R1
 			pio_set_pin_low(r1.RESET);
+			active[1] = false;
+			NVIC_DisableIRQ(TC7_IRQn);
+			printf("Encoder R1: %d ", encode[1]);
+			//R2
 			pio_set_pin_low(r2.RESET);
+			active[2] = false;
+			NVIC_DisableIRQ(TC6_IRQn);
+			printf("Encoder R2: %d\r", encode[2]);
+		
 			break;
 			
 			case 'n':
@@ -185,7 +198,17 @@ int main (void)
 			break;
 			
 			case',':
-			printf("Encode Z: %d\r", encode[0]);
+			//printf("Encode Z: %d\r", encode[0]);
+			printf("Encoder R1: %d\r", encode[1]);
+			printf("Encoder R2: %d\r", encode[2]);
+			break;
+			
+			case'.':
+			getCube(800, 800, 7800);
+			break;
+			
+			case'-':
+			placeTower();
 			break;
 			
 			default:
@@ -235,7 +258,7 @@ int main (void)
 			break;
 			
 			case 0x04: // Würfel 1 Phi  
-				cubePositions[2][0] =	-5*uart_get_data();
+				cubePositions[2][0] =	5*uart_get_data();
 				uart_send(cubePositions[2][0]);			
 			break;
 			
@@ -250,7 +273,7 @@ int main (void)
 			break;
 			
 			case 0x07: // Würfel 2 Phi  
-				cubePositions[2][1] =	-5*uart_get_data();
+				cubePositions[2][1] =	5*uart_get_data();
 				uart_send(cubePositions[2][1]);			
 			break;
 			
@@ -265,7 +288,7 @@ int main (void)
 			break;
 			
 			case 0x0A: // Würfel 3 Phi  
-				cubePositions[2][2] =	-5*uart_get_data();
+				cubePositions[2][2] =	5*uart_get_data();
 				uart_send(cubePositions[2][2]);			
 			break;
 			
@@ -280,7 +303,7 @@ int main (void)
 			break;
 			
 			case 0x0D: // Würfel 4 Phi  
-				cubePositions[2][3] =	-5*uart_get_data();
+				cubePositions[2][3] =	5*uart_get_data();
 				uart_send(cubePositions[2][3]);			
 			break;
 			
@@ -295,7 +318,7 @@ int main (void)
 			break;
 			
 			case 0x10: // Würfel 5 Phi  
-				cubePositions[2][4] =	-5*uart_get_data();
+				cubePositions[2][4] =	5*uart_get_data();
 				uart_send(cubePositions[2][4]);			
 			break;
 			
@@ -310,7 +333,7 @@ int main (void)
 			break;
 			
 			case 0x13: // Würfel 6 Phy  
-				cubePositions[2][5] =	-5*uart_get_data();
+				cubePositions[2][5] =	5*uart_get_data();
 				uart_send(cubePositions[2][5]);			
 			break;
 			

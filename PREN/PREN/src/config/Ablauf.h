@@ -21,19 +21,19 @@
 
 /* Define Maximalvalues */
 #define MAXSTEPS		20000
-#define MAXVALUE_ENC_R1	2650
-#define MAXVALUE_ENC_R2 3000
-#define MAXVALUE_ENC_Z	-13390
+#define MAXVALUE_ENC_R1	2480
+#define MAXVALUE_ENC_R2 2990
+#define MAXVALUE_ENC_Z	13800
 
 /* Define Positions */
-#define STARTPOSITION_Z -6885
+#define STARTPOSITION_Z 7200
 #define KINECTPOSITION_90	500	//TODO
 #define KINECTPOSITION_135	500	//TODO
 #define KINECTPOSITION_180	500	//TODO
-#define PLACE_TOWER_R1	500 //TODO
-#define PLACE_TOWER_R2	500 //TODO
-#define PLACE_TOWER_Z	500 //TODO
-#define TOWER_PLACED	500 //TODO r etwas zurück
+#define PLACE_TOWER_R1	400 //TODO
+#define PLACE_TOWER_R2	400 //TODO
+#define PLACE_TOWER_Z	7200 
+#define TOWER_PLACED	0
 
 
 uint32_t initialPosition(void);

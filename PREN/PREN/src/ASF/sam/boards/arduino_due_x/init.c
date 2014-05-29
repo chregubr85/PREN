@@ -202,7 +202,7 @@ void board_init(void)
 				| TC_CMR_WAVE /* Waveform mode */
 				| TC_CMR_WAVSEL_UP_RC
 				);
-				tc_write_rc(TC2, 2, 42000);
+				tc_write_rc(TC2, 2, 21000);
 				/*Interrupt enable*/
 				TC2->TC_CHANNEL[2].TC_IER = TC_IER_CPCS;
 				TC2->TC_CHANNEL[2].TC_IER =~ TC_IDR_CPCS;
