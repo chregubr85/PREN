@@ -125,11 +125,8 @@ TC1_Handler(void)
 			pio_set_pin_low(r2.RESET);
 			active[2] = false;
 		}
-	
-	
-	
-	
 		
+			
 }
 
 

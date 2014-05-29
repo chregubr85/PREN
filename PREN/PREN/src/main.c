@@ -67,14 +67,13 @@ static void configure_console(void)
 int main (void)
 {
 	
-
 	uint32_t steps;
 	uint32_t encValue = 0;
 	
 	configure_console();
 	board_init();
 	sysclk_init();
-	
+	/*
 	
 	puts("--i Zylinder Z aus\r--o Zyliner Z ein\r\r--k Zylinder Stack aus\r--l Zylinder Stack ein\r\r--a Z CCW\r--s Z CW\r\r--d R1 CCW\r--f R1 CW\r\r--g R2 CCW\r--h R2 CW\r\r--x Servo öffnen\r--c Servo in Mittelstellung\r\r--n Initial Position anfahren\r--m Start Position anfahren\r\r--y Alle Motoren aus\r");
 
@@ -216,12 +215,11 @@ int main (void)
 			}
 		 }
 
+*/
 
 
 
-/*
-
-	//while(true){
+	while(true){
 
 	key = uart_getc();	
 	if (key & UART_NO_DATA )
@@ -340,23 +338,44 @@ int main (void)
 			case 0x14: // Alle Daten erhalten 
 			 	
 				//Würfel 1
-				getCube(cubePositions[0][0], cubePositions[1][0], cubePositions[2][0]);
-				
+			//	getCube(cubePositions[0][0], cubePositions[1][0], cubePositions[2][0]);
+			getCube(1000,1000,7800);
+					while(active[0] || active[1] || active[2])
+					{
+						delay_ms(50);
+					}
 				//Würfel 2
-				getCube(cubePositions[0][0], cubePositions[1][0], cubePositions[2][0]);		
-						
-				//Würfel 3
-				getCube(cubePositions[0][0], cubePositions[1][0], cubePositions[2][0]);	
-						
+				//getCube(cubePositions[0][1], cubePositions[1][1], cubePositions[2][1]);		
+				getCube(1600, 1600, 7800);	
+				while(active[0] || active[1] || active[2])
+					{
+						delay_ms(50);
+					}		
+			/*	//Würfel 3
+				getCube(cubePositions[0][2], cubePositions[1][2], cubePositions[2][2]);	
+					while(active[0] || active[1] || active[2])
+					{
+						delay_ms(50);
+					}		
 				//Würfel 4
-				getCube(cubePositions[0][0], cubePositions[1][0], cubePositions[2][0]);	
-							
+				getCube(cubePositions[0][3], cubePositions[1][3], cubePositions[2][3]);	
+					while(active[0] || active[1] || active[2])
+					{
+						delay_ms(50);
+					}			
 				//Würfel 5
-				getCube(cubePositions[0][0], cubePositions[1][0], cubePositions[2][0]);	
-							
+				getCube(cubePositions[0][4], cubePositions[1][4], cubePositions[2][4]);	
+					while(active[0] || active[1] || active[2])
+					{
+						delay_ms(50);
+					}			
 				//Würfel 6
-				getCube(cubePositions[0][0], cubePositions[1][0], cubePositions[2][0]);				
-				
+				getCube(cubePositions[0][5], cubePositions[1][5], cubePositions[2][5]);				
+					while(active[0] || active[1] || active[2])
+					{
+						delay_ms(50);
+					}
+		*/
 				startPositionOk = placeTower();
 				
 				if(startPositionOk){
@@ -386,6 +405,6 @@ int main (void)
 				printf("/ERROR COMMAND\r");
 				}
 			}
-		*/
+		
 	}
 }

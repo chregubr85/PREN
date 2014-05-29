@@ -20,7 +20,7 @@ uint32_t initialPosition(void){
 	}
 	
 	if(!pio_get_pin_value(INIT_Z_IDX)){
-	gotoPosition(zAchse, -MAXVALUE_ENC_Z);
+	//gotoPosition(zAchse, -MAXVALUE_ENC_Z);  TODO UNCOMENT
 	}
 	delay_ms(50);
 	while(active[1]){
@@ -146,38 +146,38 @@ bool placeTower(void){
 
 		gotoPosition(r1, PLACE_TOWER_R1);
 		
-		while(active[1]){
-			delay_ms(500);
-		}
+
 		gotoPosition(r2, PLACE_TOWER_R2);
 		
-		gotoPosition(zAchse, PLACE_TOWER_Z);
+	//	gotoPosition(zAchse, PLACE_TOWER_Z);	TODO UNCOMENT
 		
 		while(active[0] || active[1] || active[2])
 		{
 			delay_ms(50);
 		}
-		
+
 		//Kran senken
 		pio_set_pin_high(ZYLINDER_ZACHSE);
 		delay_s(2);		
-	
+
 		//Stack öffnen
 		pio_set_pin_high(ZYLINDER_STACK);
 		delay_ms(500);
 		
-			
+
 		//Kran heben
 		pio_set_pin_low(ZYLINDER_ZACHSE);
 		delay_ms(500);	
-		/*gotoPosition(r1, TOWER_PLACED);
+		gotoPosition(r1, TOWER_PLACED);
 		gotoPosition(r2, TOWER_PLACED);
 		
 		while(active[1] || active[2]){
 			delay_ms(50);
 		}	
+		delay_ms(500);
+		pio_set_pin_low(ZYLINDER_STACK);
 		
-		return startPosition();*/
+	//	return startPosition();			//TODO Undo Commit
 		return;
 }
 

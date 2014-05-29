@@ -49,8 +49,8 @@
 #include "PWM_TC.h"
 #include "Ablauf.h"
 
-int NORM_FREQ_R1_R2 = 400;//400;
-int NORM_FREQ_Z		= 500;//700;
+int NORM_FREQ_R1_R2 = 350;
+int NORM_FREQ_Z		= 500;
 
 
 void board_init(void)
@@ -122,7 +122,7 @@ void board_init(void)
 	r1.ENC_B	= PIO_PC12_IDX;
 	
 	// Init and start Timer
-	timer_init(r1.pwm,setStepperMode(r1, FULLSTEP)*NORM_FREQ_R1_R2);
+	timer_init(r1.pwm,setStepperMode(r1, FULLSTEP)*200);//NORM_FREQ_R1_R2);
 	// set Enable high -> holding Tork
 	pio_set_pin_high(r1.ENBLE);
 		
@@ -156,7 +156,7 @@ void board_init(void)
 			r2.ENC_B	= PIO_PB14_IDX;
 
 	// Init and start Timer
-	timer_init(r2.pwm,setStepperMode(r2, FULLSTEP)*NORM_FREQ_R1_R2);
+	timer_init(r2.pwm,setStepperMode(r2, FULLSTEP)*200);//NORM_FREQ_R1_R2);
 	// set Enable high -> holding Tork
 	pio_set_pin_high(r2.ENBLE);	
 		
