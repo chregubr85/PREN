@@ -302,10 +302,11 @@ void uart_send(uint32_t data)
 	}
 	else
 	{
+		//printf("data: %d\r",data);
 		uart_putc(UART_OK);
-		uart_putc((data>>24)&0xFF);
-		uart_putc((data>>16)& 0xFF);
-		uart_putc((data>>8&0xFF));
-		uart_putc(data & 0xFF);
+		uart_putc(UART_EMPTY);
+		uart_putc(UART_EMPTY);
+		uart_putc(UART_EMPTY);
+		uart_putc(UART_EMPTY);
 	}
 }

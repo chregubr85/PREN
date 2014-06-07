@@ -294,19 +294,19 @@ void TC7_Handler(){
 	countInterR1++;
 	
 	// Clockwise up
-		if(encode[1]<countR1up && countInterR1 == 10 && r1CW){	
-			tc_stop(r1.pwm.Timercounter, r1.pwm.channel);
-			tc_write_rc(r1.pwm.Timercounter, r1.pwm.channel, tc_read_rc(r1.pwm.Timercounter,r1.pwm.channel)-2200);
-			tc_start(r1.pwm.Timercounter, r1.pwm.channel);
-			countInterR1 = 0;
+	if(encode[1]<countR1up && countInterR1 == 10 && r1CW){	
+		tc_stop(r1.pwm.Timercounter, r1.pwm.channel);
+		tc_write_rc(r1.pwm.Timercounter, r1.pwm.channel, tc_read_rc(r1.pwm.Timercounter,r1.pwm.channel)-2200);
+		tc_start(r1.pwm.Timercounter, r1.pwm.channel);
+		countInterR1 = 0;
 		}
 		
 	// Clockwise down	
-		if(encode[1]>=countR1down && countInterR1 == 10 && r1CW){
-			tc_stop(r1.pwm.Timercounter, r1.pwm.channel);
-			tc_write_rc(r1.pwm.Timercounter, r1.pwm.channel, tc_read_rc(r1.pwm.Timercounter,r1.pwm.channel)+2200);
-			tc_start(r1.pwm.Timercounter, r1.pwm.channel);
-			countInterR1 = 0;
+	if(encode[1]>=countR1down && countInterR1 == 10 && r1CW){
+		tc_stop(r1.pwm.Timercounter, r1.pwm.channel);
+		tc_write_rc(r1.pwm.Timercounter, r1.pwm.channel, tc_read_rc(r1.pwm.Timercounter,r1.pwm.channel)+2200);
+		tc_start(r1.pwm.Timercounter, r1.pwm.channel);
+		countInterR1 = 0;
 		}
 
 	// Counterclockwise up

@@ -20,7 +20,7 @@ uint32_t initialPosition(void){
 	}
 	
 	if(!pio_get_pin_value(INIT_Z_IDX)){
-	//gotoPosition(zAchse, -MAXVALUE_ENC_Z);  TODO UNCOMENT
+	gotoPosition(zAchse, -MAXVALUE_ENC_Z);  
 	}
 	delay_ms(50);
 	while(active[1]){
@@ -116,7 +116,7 @@ void getCube(uint32_t steps_r1, uint32_t steps_r2, uint32_t steps_z){
 	
 	gotoPosition(r2, steps_r2);	
 	
-	//gotoPosition(zAchse, steps_z);  TODO UNCOMMENT
+	gotoPosition(zAchse, steps_z);  
 
 	
 	while(active[0] || active[1] || active[2])
@@ -149,35 +149,38 @@ bool placeTower(void){
 
 		gotoPosition(r2, PLACE_TOWER_R2);
 		
-	//	gotoPosition(zAchse, PLACE_TOWER_Z);	TODO UNCOMENT
+		gotoPosition(zAchse, PLACE_TOWER_Z);	
 		
 		while(active[0] || active[1] || active[2])
 		{
 			delay_ms(50);
 		}
 
-		//Kran senken
-		pio_set_pin_high(ZYLINDER_ZACHSE);
-		delay_s(2);		
-
+		delay_s(2);
+		
+		pwm_channel_update_duty(PWM, &pwm_pin_7, 42);
+		
+		delay_s(2);
+		
+		
 		//Stack öffnen
 		pio_set_pin_high(ZYLINDER_STACK);
-		delay_ms(500);
+		delay_s(2);
 		
 
-		//Kran heben
+	/*	//Kran heben NICHT!
 		pio_set_pin_low(ZYLINDER_ZACHSE);
-		delay_ms(500);	
+		delay_ms(500);	*/
 		gotoPosition(r1, TOWER_PLACED);
 		gotoPosition(r2, TOWER_PLACED);
 		
 		while(active[1] || active[2]){
 			delay_ms(50);
 		}	
-		delay_ms(500);
+		delay_s(2);
 		pio_set_pin_low(ZYLINDER_STACK);
 		
-	//	return startPosition();			//TODO Undo Commit
+	//	return startPosition();			TODO
 		return;
 }
 

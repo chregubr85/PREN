@@ -73,8 +73,8 @@ int main (void)
 	configure_console();
 	board_init();
 	sysclk_init();
-	/*
 	
+/*
 	puts("--i Zylinder Z aus\r--o Zyliner Z ein\r\r--k Zylinder Stack aus\r--l Zylinder Stack ein\r\r--a Z CCW\r--s Z CW\r\r--d R1 CCW\r--f R1 CW\r\r--g R2 CCW\r--h R2 CW\r\r--x Servo öffnen\r--c Servo in Mittelstellung\r\r--n Initial Position anfahren\r--m Start Position anfahren\r\r--y Alle Motoren aus\r");
 
 
@@ -197,7 +197,7 @@ int main (void)
 			break;
 			
 			case',':
-			//printf("Encode Z: %d\r", encode[0]);
+			printf("Encode Z: %d\r", encode[0]);
 			printf("Encoder R1: %d\r", encode[1]);
 			printf("Encoder R2: %d\r", encode[2]);
 			break;
@@ -214,8 +214,8 @@ int main (void)
 			printf("%d is not used! \r\n", key);
 			}
 		 }
-
 */
+
 
 
 
@@ -239,25 +239,37 @@ int main (void)
 				uart_get_data();			// cleaer the buffer
 				
 				init_ok = initialPosition(); 
-			//	if(startPosition()){			TODO UNCOMMENT
-					uart_send(init_ok);
-			//	}
+				if(init_ok){
+					init_ok = startPosition();
+				}
+				
+				delay_s(1);
+				uart_send(UART_INIT_OK);
 			break;
 			
 			case 0x02: // Würfel 1 R1  
 				cubePositions[0][0] =	4*uart_get_data();
+				printf("/R1: %d\r", cubePositions[0][0]);
 				uart_send(cubePositions[0][0]);
+				
+				
 
 			break;
 			
 			case 0x03: // Würfel 1 R2  
 				cubePositions[1][0] =	5*uart_get_data();
-				uart_send(cubePositions[1][0]);			
+				printf("/R2: %d\r", cubePositions[1][0]);	
+				uart_send(cubePositions[1][0]);		
+				
+				
 			break;
 			
 			case 0x04: // Würfel 1 Phi  
 				cubePositions[2][0] =	5*uart_get_data();
+				printf("/Z: %d\r", cubePositions[2][0]);
 				uart_send(cubePositions[2][0]);			
+				
+				
 			break;
 			
 			case 0x05: // Würfel 2 R1  
@@ -338,20 +350,18 @@ int main (void)
 			case 0x14: // Alle Daten erhalten 
 			 	
 				//Würfel 1
-			//	getCube(cubePositions[0][0], cubePositions[1][0], cubePositions[2][0]);
-			getCube(1000,1000,7800);
+				getCube(cubePositions[0][0], cubePositions[1][0], cubePositions[2][0]);
 					while(active[0] || active[1] || active[2])
 					{
 						delay_ms(50);
-					}
+					}/*
 				//Würfel 2
-				//getCube(cubePositions[0][1], cubePositions[1][1], cubePositions[2][1]);		
-				getCube(1600, 1600, 7800);	
+				getCube(cubePositions[0][1], cubePositions[1][1], cubePositions[2][1]);		
 				while(active[0] || active[1] || active[2])
 					{
 						delay_ms(50);
 					}		
-			/*	//Würfel 3
+				//Würfel 3
 				getCube(cubePositions[0][2], cubePositions[1][2], cubePositions[2][2]);	
 					while(active[0] || active[1] || active[2])
 					{
@@ -375,14 +385,14 @@ int main (void)
 					{
 						delay_ms(50);
 					}
-		*/
+		
 				startPositionOk = placeTower();
 				
 				if(startPositionOk){
-					uart_send(UART_INIT_OK);
+					uart_send(UART_OK_32);
 				}
 				else
-					uart_send(UART_ERROR);	
+					uart_send(UART_ERROR);	*/
 			break;
 			
 			case 0x1e://Spielfeld abfahren Kinect
@@ -399,7 +409,13 @@ int main (void)
 					delay_ms(500);
 				}
 				placeTower();
-			break;			
+			break;		
+			
+			case',':
+			printf("Encode Z: %d\r", encode[0]);
+			printf("Encoder R1: %d\r", encode[1]);
+			printf("Encoder R2: %d\r", encode[2]);
+			break;	
 
 			default:
 				printf("/ERROR COMMAND\r");
