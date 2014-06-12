@@ -250,7 +250,7 @@ uint32_t uart_get_data(void)
 	unsigned int temp;
 	uint8_t count = 0;
 	
-	delay_ms(1);
+	delay_ms(10);
 	
 	while(count<=3)
 	{
@@ -260,6 +260,8 @@ uint32_t uart_get_data(void)
 		{
 			/*no data available from UART*/
 			return UART_ERROR;
+	
+		temp = uart_getc();
 		
 		}
 		else

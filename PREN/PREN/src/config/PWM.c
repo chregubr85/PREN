@@ -20,6 +20,11 @@ int32_t countInterR2;
 int32_t countR2down;
 bool r2CW;
 
+int32_t countZup;
+int32_t countInterZ;
+int32_t countZdown;
+bool zCW;
+
 /*Gibt den Wert für für das RC Register zurück, -> wie "weit" soll
 der Timer laufen.*/
 int getValueRCforFreq(int freq){

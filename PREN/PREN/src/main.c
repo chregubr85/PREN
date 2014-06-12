@@ -69,6 +69,7 @@ int main (void)
 	
 	uint32_t steps;
 	uint32_t encValue = 0;
+	uint32_t countNrCubes = 0;
 	
 	configure_console();
 	board_init();
@@ -242,149 +243,183 @@ int main (void)
 				if(init_ok){
 					init_ok = startPosition();
 				}
-				
 				delay_s(1);
 				uart_send(UART_INIT_OK);
 			break;
 			
 			case 0x02: // Würfel 1 R1  
+				delay_ms(100);
 				cubePositions[0][0] =	4*uart_get_data();
-				printf("/R1: %d\r", cubePositions[0][0]);
 				uart_send(cubePositions[0][0]);
 				
-				
-
 			break;
 			
 			case 0x03: // Würfel 1 R2  
+				delay_ms(100);
 				cubePositions[1][0] =	5*uart_get_data();
-				printf("/R2: %d\r", cubePositions[1][0]);	
-				uart_send(cubePositions[1][0]);		
-				
+				uart_send(cubePositions[1][0]);	
 				
 			break;
 			
 			case 0x04: // Würfel 1 Phi  
+				delay_ms(100);
 				cubePositions[2][0] =	5*uart_get_data();
-				printf("/Z: %d\r", cubePositions[2][0]);
-				uart_send(cubePositions[2][0]);			
-				
-				
+				countNrCubes++;
+				uart_send(cubePositions[2][0]);		
+					
 			break;
 			
 			case 0x05: // Würfel 2 R1  
+				delay_ms(100);
 				cubePositions[0][1] =	4*uart_get_data();
 				uart_send(cubePositions[0][1]);			
 			break;
 			
 			case 0x06: // Würfel 2 R2  
+				delay_ms(100);
 				cubePositions[1][1] =	5*uart_get_data();
 				uart_send(cubePositions[1][1]);			
 			break;
 			
-			case 0x07: // Würfel 2 Phi  
+			case 0x07: // Würfel 2 Phi 
+				delay_ms(100); 
 				cubePositions[2][1] =	5*uart_get_data();
+				countNrCubes++;
 				uart_send(cubePositions[2][1]);			
 			break;
 			
 			case 0x08: // Würfel 3 R1  
+				delay_ms(100);
 				cubePositions[0][2] =	4*uart_get_data();
 				uart_send(cubePositions[0][2]);			
 			break;
 			
 			case 0x09: // Würfel 3 R2  
+				delay_ms(100);
 				cubePositions[1][2] =	5*uart_get_data();
 				uart_send(cubePositions[1][2]);			
 			break;
 			
-			case 0x0A: // Würfel 3 Phi  
+			case 0x0A: // Würfel 3 Phi
+				delay_ms(100);  
 				cubePositions[2][2] =	5*uart_get_data();
+				countNrCubes++;
 				uart_send(cubePositions[2][2]);			
 			break;
 			
 			case 0x0B: // Würfel 4 R1  
+				delay_ms(100);
 				cubePositions[0][3] =	4*uart_get_data();
 				uart_send(cubePositions[0][3]);			
 			break;
 			
 			case 0x0C: // Würfel 4 R2  
+				delay_ms(100);
 				cubePositions[1][3] =	5*uart_get_data();
 				uart_send(cubePositions[1][3]);			
 			break;
 			
 			case 0x0D: // Würfel 4 Phi  
+				delay_ms(100);
 				cubePositions[2][3] =	5*uart_get_data();
+				countNrCubes++;
 				uart_send(cubePositions[2][3]);			
 			break;
 			
 			case 0x0E: // Würfel 5 R1  
+				delay_ms(100);
 				cubePositions[0][4] =	4*uart_get_data();
 				uart_send(cubePositions[0][4]);			
 			break;
 			
 			case 0x0F: // Würfel 5 R2  
+				delay_ms(100);
 				cubePositions[1][4] =	5*uart_get_data();
 				uart_send(cubePositions[1][4]);			
 			break;
 			
 			case 0x10: // Würfel 5 Phi  
+				delay_ms(100);
 				cubePositions[2][4] =	5*uart_get_data();
+				countNrCubes++;
 				uart_send(cubePositions[2][4]);			
 			break;
 			
 			case 0x11: // Würfel 6 R1  
+				delay_ms(100);
 				cubePositions[0][5] =	4*uart_get_data();
 				uart_send(cubePositions[0][5]);			
 			break;
 			
 			case 0x12: // Würfel 6 R2  
+				delay_ms(100);
 				cubePositions[1][5] =	5*uart_get_data();
 				uart_send(cubePositions[1][5]);			
 			break;
 			
 			case 0x13: // Würfel 6 Phy  
+				delay_ms(100);
 				cubePositions[2][5] =	5*uart_get_data();
+				countNrCubes++;
 				uart_send(cubePositions[2][5]);			
 			break;
 			
 			case 0x14: // Alle Daten erhalten 
-			 	
+				 
 				//Würfel 1
-				getCube(cubePositions[0][0], cubePositions[1][0], cubePositions[2][0]);
-					while(active[0] || active[1] || active[2])
-					{
-						delay_ms(50);
-					}/*
+				if(countNrCubes > 0){
+					getCube(cubePositions[0][0], cubePositions[1][0], cubePositions[2][0]);
+						while(active[0] || active[1] || active[2])
+						{
+							delay_ms(50);
+						}
+				}
+				
 				//Würfel 2
-				getCube(cubePositions[0][1], cubePositions[1][1], cubePositions[2][1]);		
-				while(active[0] || active[1] || active[2])
-					{
-						delay_ms(50);
-					}		
-				//Würfel 3
-				getCube(cubePositions[0][2], cubePositions[1][2], cubePositions[2][2]);	
+				if(countNrCubes > 1){
+					getCube(cubePositions[0][1], cubePositions[1][1], cubePositions[2][1]);		
 					while(active[0] || active[1] || active[2])
-					{
-						delay_ms(50);
-					}		
-				//Würfel 4
-				getCube(cubePositions[0][3], cubePositions[1][3], cubePositions[2][3]);	
-					while(active[0] || active[1] || active[2])
-					{
-						delay_ms(50);
-					}			
-				//Würfel 5
-				getCube(cubePositions[0][4], cubePositions[1][4], cubePositions[2][4]);	
-					while(active[0] || active[1] || active[2])
-					{
-						delay_ms(50);
-					}			
-				//Würfel 6
-				getCube(cubePositions[0][5], cubePositions[1][5], cubePositions[2][5]);				
-					while(active[0] || active[1] || active[2])
-					{
-						delay_ms(50);
+						{
+							delay_ms(50);
+						}		
+				}
+	
+									
+				if(countNrCubes > 2){	
+					//Würfel 3
+					getCube(cubePositions[0][2], cubePositions[1][2], cubePositions[2][2]);	
+						while(active[0] || active[1] || active[2])
+						{
+							delay_ms(50);
+						}		
+						}
+					
+				if(countNrCubes > 3){	
+					//Würfel 4
+					getCube(cubePositions[0][3], cubePositions[1][3], cubePositions[2][3]);	
+						while(active[0] || active[1] || active[2])
+						{
+							delay_ms(50);
+						}			
 					}
+					
+				if(cubePositions > 4){	
+					//Würfel 5
+					getCube(cubePositions[0][4], cubePositions[1][4], cubePositions[2][4]);	
+						while(active[0] || active[1] || active[2])
+						{
+							delay_ms(50);
+						}			
+					}
+					
+				if(countNrCubes > 5){	
+					//Würfel 6
+					getCube(cubePositions[0][5], cubePositions[1][5], cubePositions[2][5]);				
+						while(active[0] || active[1] || active[2])
+						{
+							delay_ms(50);
+						}
+				}
 		
 				startPositionOk = placeTower();
 				
@@ -392,7 +427,7 @@ int main (void)
 					uart_send(UART_OK_32);
 				}
 				else
-					uart_send(UART_ERROR);	*/
+					uart_send(UART_ERROR);
 			break;
 			
 			case 0x1e://Spielfeld abfahren Kinect
@@ -416,6 +451,23 @@ int main (void)
 			printf("Encoder R1: %d\r", encode[1]);
 			printf("Encoder R2: %d\r", encode[2]);
 			break;	
+			
+			case 'x':
+			pwm_channel_update_duty(PWM, &pwm_pin_7, 42);
+			break;
+			
+			case 'c':
+			pwm_channel_update_duty(PWM, &pwm_pin_7, 36);
+			break;		
+			
+			case 'i':
+			pio_set_pin_low(ZYLINDER_ZACHSE);
+			break;
+			
+			case 'o':
+			pio_set_pin_high(ZYLINDER_ZACHSE);
+			break;
+				
 
 			default:
 				printf("/ERROR COMMAND\r");
