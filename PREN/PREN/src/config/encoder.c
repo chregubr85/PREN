@@ -111,7 +111,7 @@ TC1_Handler(void)
 		//
 		// Stop Steppers
 		//
-		if(encode [0] == globalEncValueZ || encode[0] >= MAXVALUE_ENC_Z){
+		if((encode [0] == globalEncValueZ || encode[0] >= MAXVALUE_ENC_Z) && globalEncValueZ !=0){
 			pio_set_pin_low(zAchse.RESET);
 			active[0]=false;
 		}

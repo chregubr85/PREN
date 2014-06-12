@@ -173,20 +173,49 @@ void gotoPosition( t_Stepper axis, int encValue )
 	
 	/*Stop condition PWM Z-Achse*/
 	if(axis.pwm.Timercounter == TC0 && axis.pwm.channel == 0){
+		tc_stop(zAchse.pwm.Timercounter, zAchse.pwm.channel);
+		timer_init(zAchse.pwm,setStepperMode(zAchse, FULLSTEP)*200);
 		
-		if(encode[0] < encValue){				// Direction Clockwise
-			pio_set_pin_high(axis.CW_CCW);
-			globalEncValueZ = encValue;
-			//printf("\r\rEncoder Z: %d     Sollwert Z: %d\r", encode[0], encValue);
-		}
-		else{									// Direction Counterclockwise
+		
+		
+		
+		
+		if(encode[0] > encValue){				// Direction Counterclockwise
 			pio_set_pin_low(axis.CW_CCW);
-		//	printf("\r\rEncoder Z_pin low: %d     Sollwert Z: %d\r", encode[0], encValue);
 			globalEncValueZ = encValue;
+			zCW = false;
+			
+			if(encode[0]-encValue>=800){
+				countZup = encode[0]-400;
+				countZdown = encValue+400;		
+			}
+			else{
+				countZup = encode[0] - (encode[0]-encValue)/2;
+				countR2down = encode[0] - (encode[0]-encValue)/2;				
+			}
 		}
+		
+				
+	else{									// Direction Clockwise
+		pio_set_pin_high(axis.CW_CCW);
+		globalEncValueZ = encValue;
+		zCW = true;
+		
 
+		
+		
+		if(encValue-encode[0] >=800){
+			countZup = encode[0]+400;
+			countZdown = encValue-400;			
+		}
+		else{
+			countZup = encode[0] + (encValue-encode[0])/2;
+			countZdown = encode[0] + (encValue-encode[2])/2;			
+		}
+	}
+	
 		pio_set_pin_high(axis.RESET);
-	//	NVIC_EnableIRQ(TC0_IRQn);
+		NVIC_EnableIRQ(TC0_IRQn);
 	}
 		
 		
@@ -261,7 +290,6 @@ void gotoPosition( t_Stepper axis, int encValue )
 			pio_set_pin_high(axis.CW_CCW);
 			globalEncValueR2 = encValue;
 			r2CW = true;
-				
 			if((encValue-encode[2])>=400){
 				countR2up = encode[2]+200;
 				countR2down = encValue-200;
@@ -278,18 +306,53 @@ void gotoPosition( t_Stepper axis, int encValue )
 }
 
 
-/*ISR PWM2 Z-ACHSE*//*
+/*ISR PWM2 Z-ACHSE*/
 void TC0_Handler(){
 	TC0->TC_CHANNEL[0].TC_SR;
-	//printf("ENC Z: %d\r", encode[0]);
-	if(encode [0] == globalEncValueZ || encode[0] >= MAXVALUE_ENC_Z){
-		pio_set_pin_low(zAchse.RESET);
-		active[0]=false;
-		NVIC_DisableIRQ(TC0_IRQn);
-		printf("ISR Encoder Z: %d ", encode[0]);
+	
+
+	countInterZ++;
+
+	
+	// Clockwise up												
+	if(encode[0]<countZup && countInterZ == 20 && zCW){
+		tc_stop(zAchse.pwm.Timercounter, zAchse.pwm.channel);													
+		tc_write_rc(zAchse.pwm.Timercounter, zAchse.pwm.channel, tc_read_rc(zAchse.pwm.Timercounter,zAchse.pwm.channel)-4000);
+		tc_start(zAchse.pwm.Timercounter, zAchse.pwm.channel);
+		countInterZ = 0;
 	}
+
+	// Clockwise down										
+	if(encode[0]>=countZdown && countInterZ == 20 && zCW){
+		tc_stop(zAchse.pwm.Timercounter, zAchse.pwm.channel);
+		tc_write_rc(zAchse.pwm.Timercounter, zAchse.pwm.channel, tc_read_rc(zAchse.pwm.Timercounter,zAchse.pwm.channel)+4000);
+		tc_start(zAchse.pwm.Timercounter, zAchse.pwm.channel);
+		//countInterZ = 0;
+	}
+
+	// Counterclockwise up															
+	if(encode[0]>countZup && countInterZ == 20 && !zCW){
+		tc_stop(zAchse.pwm.Timercounter, zAchse.pwm.channel);
+		tc_write_rc(zAchse.pwm.Timercounter, zAchse.pwm.channel, tc_read_rc(zAchse.pwm.Timercounter,zAchse.pwm.channel)-4000);
+		tc_start(zAchse.pwm.Timercounter, zAchse.pwm.channel);
+		//countInterZ = 0;
+		
+	}
+
+	// Counterclockwise down
+	if(encode[0]<=countZdown && countInterZ == 20 && !zCW){	
+		tc_stop(zAchse.pwm.Timercounter, zAchse.pwm.channel);	
+		tc_write_rc(zAchse.pwm.Timercounter, zAchse.pwm.channel, tc_read_rc(zAchse.pwm.Timercounter,zAchse.pwm.channel)+4000);
+		tc_start(zAchse.pwm.Timercounter, zAchse.pwm.channel);
+	//	countInterZ = 0;
+	}
+
+	if(!active[0] || countInterZ>20){
+		countInterZ = 0;
+	}	
+
 }
-*/
+
 
 
 /*ISR PWM3 R1*/

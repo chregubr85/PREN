@@ -467,7 +467,38 @@ int main (void)
 			case 'o':
 			pio_set_pin_high(ZYLINDER_ZACHSE);
 			break;
-				
+			
+			case 'a':	//Z CCW			
+			printf("Anzahl Schritte: \r");
+			steps = get_input_value();
+			encValue = encode[0] + (5*steps);
+			printf("\rFahre %d Schritte.\r", encValue);
+			gotoPosition(zAchse, encValue);
+			break;	
+			
+			case 's':	//z CW
+			printf("Anzahl Schritte: \r");
+			steps = get_input_value();
+			encValue = encode[0] - (5*steps);
+			printf("\rFahre %d Schritte.\r", encValue);
+			gotoPosition(zAchse, encValue);
+			break;						
+
+			case 'g':	//R2 CCW
+			printf("Anzahl Schritte: \r");
+			steps = get_input_value();
+			encValue = encode[2] + (5*steps);
+			printf("\rFahre %d Schritte.\r", encValue);
+			gotoPosition(r2, encValue);
+			break;
+			
+			case 'h':	//R2 CW
+			printf("Anzahl Schritte: \r");
+			steps = get_input_value();
+			encValue = encode[2] - (5*steps);
+			printf("\rFahre %d Schritte.\r", encValue);
+			gotoPosition(r2, encValue);
+			break;				
 
 			default:
 				printf("/ERROR COMMAND\r");
