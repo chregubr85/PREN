@@ -450,6 +450,7 @@ int main (void)
 			printf("Encode Z: %d\r", encode[0]);
 			printf("Encoder R1: %d\r", encode[1]);
 			printf("Encoder R2: %d\r", encode[2]);
+			printf("Flag Init: %d\r", gotoInitPositionZ);
 			break;	
 			
 			case 'x':

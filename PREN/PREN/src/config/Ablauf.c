@@ -20,7 +20,8 @@ uint32_t initialPosition(void){
 	}
 	
 	if(!pio_get_pin_value(INIT_Z_IDX)){
-	gotoPosition(zAchse, -MAXVALUE_ENC_Z);  
+		gotoInitPositionZ = true;
+		gotoPosition(zAchse, -MAXVALUE_ENC_Z);  
 	}
 	delay_ms(50);
 	while(active[1]){
@@ -123,7 +124,7 @@ void getCube(uint32_t steps_r1, uint32_t steps_r2, uint32_t steps_z){
 	{
 		delay_ms(50);
 	}
-	delay_s(5);			//wait after position reached
+	delay_s(15);			//wait after position reached
 	
 	//Servo in Mittelstellung
 	pwm_channel_update_duty(PWM, &pwm_pin_7, 42);
@@ -161,7 +162,7 @@ bool placeTower(void){
 		
 		pwm_channel_update_duty(PWM, &pwm_pin_7, 42);
 		
-		delay_s(2);
+		delay_s(1);
 		
 		
 		//Stack öffnen
@@ -178,7 +179,7 @@ bool placeTower(void){
 		while(active[1] || active[2]){
 			delay_ms(50);
 		}	
-		delay_s(2);
+		delay_s(1);
 		pio_set_pin_low(ZYLINDER_STACK);
 		
 	//	return startPosition();			TODO

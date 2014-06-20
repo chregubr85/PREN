@@ -23,6 +23,7 @@
 uint32_t globalEncValueZ ;
 uint32_t globalEncValueR1;
 uint32_t globalEncValueR2;
+bool gotoInitPositionZ;
 
 typedef struct {
 		Tc  *Timercounter;

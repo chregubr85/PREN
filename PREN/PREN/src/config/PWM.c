@@ -173,13 +173,16 @@ void gotoPosition( t_Stepper axis, int encValue )
 	
 	/*Stop condition PWM Z-Achse*/
 	if(axis.pwm.Timercounter == TC0 && axis.pwm.channel == 0){
-		tc_stop(zAchse.pwm.Timercounter, zAchse.pwm.channel);
-		timer_init(zAchse.pwm,setStepperMode(zAchse, FULLSTEP)*200);
-		
-		
-		
-		
-		
+		if(gotoInitPositionZ){
+			tc_stop(zAchse.pwm.Timercounter, zAchse.pwm.channel);
+			timer_init(zAchse.pwm,setStepperMode(zAchse, VIERTELSTEP)*200);
+			NVIC_DisableIRQ(TC0_IRQn);
+		}
+		else{
+			tc_stop(zAchse.pwm.Timercounter, zAchse.pwm.channel);
+			timer_init(zAchse.pwm,setStepperMode(zAchse, FULLSTEP)*200);
+		}
+
 		if(encode[0] > encValue){				// Direction Counterclockwise
 			pio_set_pin_low(axis.CW_CCW);
 			globalEncValueZ = encValue;
@@ -215,7 +218,10 @@ void gotoPosition( t_Stepper axis, int encValue )
 	}
 	
 		pio_set_pin_high(axis.RESET);
-		NVIC_EnableIRQ(TC0_IRQn);
+		if(!gotoInitPositionZ){
+			NVIC_EnableIRQ(TC0_IRQn);			
+		}
+		gotoInitPositionZ = false;
 	}
 		
 		
