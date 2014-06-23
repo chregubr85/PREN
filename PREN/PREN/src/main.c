@@ -421,13 +421,18 @@ int main (void)
 						}
 				}
 		
-				startPositionOk = placeTower();
+			/*	startPositionOk = placeTower();
 				
 				if(startPositionOk){
 					uart_send(UART_OK_32);
 				}
 				else
-					uart_send(UART_ERROR);
+					uart_send(UART_ERROR);*/
+			
+				uart_send(UART_OK_32);
+				countNrCubes = 0;
+			
+			
 			break;
 			
 			case 0x1e://Spielfeld abfahren Kinect
@@ -441,7 +446,7 @@ int main (void)
 			
 			case 0x1f: //Turm stellen erzwingen 
 				while(active[0] == true || active[1] == true || active[2] == true){
-					delay_ms(500);
+					delay_ms(50);
 				}
 				placeTower();
 			break;		
